@@ -1,8 +1,11 @@
-@REM	@echo off
+@REM	
+@echo off
 @setlocal
-@set webhost=localhost:8080
+set filename=xesmanager_configuration.zip
+if not "%1*" == "*" set filename=%1
+@set webhost=localhost:5680
 wget.exe --post-data "data={username:admin,password:admin}" "http://%webhost%/xes-manager/Service/Security Service/login" -O login.json
-@FOR /F "tokens=2 delims=:{}" %%i in ('type login.json') do curl -v -i -F zipConfig=@xesmanager_configuration.zip "http://localhost:8080/xes-manager/Upload/Command/import?SessionId=%%i"
+@FOR /F "tokens=2 delims=:{}" %%i in ('type login.json') do curl -v -i -F zipConfig=@%filename% "http://%webhost%/xes-manager/Upload/Command/import?SessionId=%%i"
 exit /b
 
 @REM	FOR /F "tokens=2 delims=:{}" %%i in ('type login.json') do curl -v -i -F name=zipConfig -F filedata=@xesmanager_configuration.zip "http://localhost:8080/xes-manager/Upload/Command/import?SessionId=%%i"
