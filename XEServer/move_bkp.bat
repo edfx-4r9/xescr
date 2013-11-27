@@ -15,10 +15,5 @@ exit /b
 echo Sending %1 to backup
 move %1 %ECHudsonBuilds%\backup\ >nul
 
-REM	
 exit /b
 
-move %ECHudsonBuilds%\%~nx1 %1 >nul
-REM	Code below is used for script debugging
-REM	C:\Edifecs\bin\7z.exe x XEServer_8.4.0.3757_20131111.zip >nul
-C:\Edifecs\bin\7z.exe x %ECHudsonBuilds%\XEServer.zip -o%ECHudsonBuilds%\%~nx1 >nul

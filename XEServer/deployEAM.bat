@@ -1,4 +1,5 @@
-@REM	@echo off
+@REM	
+@echo off
 setlocal
 if not defined ECHudsonBuilds set ECHudsonBuilds=%ECRootPath%\HBuilds
 set ArcFile=%ECHudsonBuilds%\EAM.zip
@@ -21,17 +22,9 @@ REM	not implemented
 
 :Download
 del %ECHudsonBuilds%\EAM*.zip 2>nul
-set webfile=https://etbuild01.edifecs.local/view/8.4.0/job/EAM svn 8.4.0/lastSuccessfulBuild/artifact/trunk/build-artifacts/%1
-@REM	wget --read-timeout 2 -O %ECHudsonBuilds%\EAM.zip --no-check-certificate "%webfile%"
-@REM	@call %~dp0download_build.bat %ECHudsonBuilds%\EAM.zip "https://etbuild01.edifecs.local/view/8.4.0/job/EAM svn 8.4.0/" || exit /b 1
 @call %~dp0download_build.bat %ArcFile% "%ProjectPage%" || exit /b 1
 
 :Extract
-@REM	del /S /Q %ECHudsonBuilds%\EAM >nul
-@REM	echo Extracting files in progress ...
-REM	
-@REM	7z x -y %ECHudsonBuilds%\EAM*.zip -o%ECHudsonBuilds%\ >nul
-@REM	echo Extracting finished.
 
 :Copy_files
 for %%F in (startEAMServer.bat stopEAMServer.bat) do copy %EAMRoot%\Server\bin\%%F %ECHudsonBuilds%\EAM\Server\bin\ >nul
