@@ -2,7 +2,13 @@
 @echo off
 setlocal
 if not defined ECHudsonBuilds set ECHudsonBuilds=%ECRootPath%\HBuilds
-path C:\dev-tools\FAR;%ECRootPath%\bin\;%ECHudsonBuilds%\bin;%path%
+set ArcFile=%ECHudsonBuilds%\XEServer.zip
+set ProjectPage=https://etbuild01.edifecs.local/view/8.4.0/job/XEngine Server 8.4.0/
+
+
+path %~dp0;%ECRootPath%\bin\;%ECHudsonBuilds%\bin;%path%
+SET XESManagerWorkspace=%XESRoot%\..\XESmanager\workspace
+SET CATALINA_HOME=%XESRoot%\..\XESmanager\tomcat
 REM	goto Deploy
 
 :create_backup_dirs
@@ -24,22 +30,24 @@ for /f %%F in ('dir /b %XESRoot%\profiles') do call echo y | "%EAMRoot%\Server\C
 del %ECHudsonBuilds%\XEServer*.zip 2>nul
 set webfile=https://etbuild01.edifecs.local/view/8.4.0/job/XEngine Server 8.4.0/lastSuccessfulBuild/artifact/build-artifacts/%1
 @REM	wget --read-timeout 2 -O %ECHudsonBuilds%\XEServer.zip --no-check-certificate "%webfile%"
-@call %~dp0download %ECHudsonBuilds%\XEServer.zip "%webfile%" || exit /b 2
+@REM	@call %~dp0download %ECHudsonBuilds%\XEServer.zip "%webfile%" || exit /b 2
+@call %~dp0download_build.bat %ArcFile% "%ProjectPage%" || exit /b 1
+if not exist %ECHudsonBuilds%\XEServer (@call %~dp0printbig Build download was unsuccessfull. & exit /b 1)
+@echo on
 
 :Extract
-del /S /Q %ECHudsonBuilds%\XEServer >nul
+@REM	del /S /Q %ECHudsonBuilds%\XEServer >nul
 @REM @echo Extracting files in progress ...
-@call %~dp0printbig Extracting files in progress ...
+@REM	@call %~dp0printbig Extracting files in progress ...
 @REM	
-7z x -y %ECHudsonBuilds%\XEServer*.zip -o%ECHudsonBuilds%\ >nul
-@echo Extracting finished.
+@REM	7z x -y %ECHudsonBuilds%\XEServer*.zip -o%ECHudsonBuilds%\ >nul
+@REM	@echo Extracting finished.
 copy %XESRoot%\license.lic %ECHudsonBuilds%\XEServer\
 
 :Deploy
-
 @call %XESroot%\bin\shutdown_all_profiles.bat
 sleep 3
-@call %XESRoot%\..\XESManager\bin\stop.bat
+@REM	@call %XESRoot%\..\XESManager\bin\stop.bat
 sleep 9
 @call %~dp0move_bkp.bat %XESRoot%
 @echo on
@@ -48,15 +56,18 @@ attrib +h %XESRoot%\profiles
 move %XESRoot% %ECHudsonBuilds%\backup\ || (@call %~dp0printbig @echo Unable to move XEServer directory to %ECHudsonBuilds%\backup\. & exit /b 1)
 @REM @echo.&@echo XEServer moved to %ECHudsonBuilds%\backup\XEServer
 @call %~dp0printbig XEServer moved to %ECHudsonBuilds%\backup\XEServer
-move %ECHudsonBuilds%\XEServer %XESRoot% || (@call %~dp0printbig @echo Unable to move new build to XEServer directory. & exit /b 1)
+move %ECHudsonBuilds%\XEServer %XESRoot% || (@call %~dp0printbig @echo Unable to move new build to XEServer directory.. & @call %~dp0printbig Trying to restore old verstion ... & (move %ECHudsonBuilds%\backup\XEServer %XESRoot% >nul && @call %~dp0printbig Old version Restored. || @call %~dp0printbig ERROR restoring previous version.) & @call %~dp0printbig !!! New version was NOT deployed !!! & exit /b 1)
 @call %~dp0printbig New build deployed to %XESRoot%\
-@call %XESRoot%\..\XESManager\bin\start.bat
-sleep 30
+@REM	@call %XESRoot%\..\XESManager\bin\start.bat
+@REM	@call %CATALINA_HOME%\bin\startup.bat
+@REM	sleep 30
 
 :Restore_profiles
 @call %~dp0printbig Restoring profiles from image ...
+@echo on
 for /f %%F in ('dir %ECHudsonBuilds%\profiles\*.zip /b') do @call %EAMRoot%\Server\ConfigTool\exec\win\deploy_xescfg.bat %ECHudsonBuilds%\profiles\%%F
-for /f %%F in ('dir %ECHudsonBuilds%\profiles\*.zip /b') do echo %%~nF && @call %XESRoot%\bin\start.bat %%~nF <nul
+@REM	pause
+for /f %%F in ('dir %ECHudsonBuilds%\profiles\*.zip /b') do echo Starting profile `%%~nF` && @call %XESRoot%\bin\start.bat %%~nF <nul >nul
 exit /b
 
 @call %XESRoot%\bin\agent\start-agent.bat

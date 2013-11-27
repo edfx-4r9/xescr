@@ -4,3 +4,4 @@ if not exist %ECHudsonBuilds% mkdir %ECHudsonBuilds% 2>nul || echo Unable to cre
 if not exist %ECHudsonBuilds%\backup mkdir %ECHudsonBuilds%\backup 2>nul || echo Unable to create directory %ECHudsonBuilds%\backup && exit /b 2
 if not exist %ECHudsonBuilds%\recycler mkdir %ECHudsonBuilds%\recycler 2>nul || echo Unable to create directory %ECHudsonBuilds%\recycler && exit /b 2
 if not exist %ECHudsonBuilds%\profiles mkdir %ECHudsonBuilds%\profiles 2>nul
+if not exist %ECHudsonBuilds%\workspace mkdir %ECHudsonBuilds%\workspace 2>nul
