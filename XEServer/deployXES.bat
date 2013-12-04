@@ -1,6 +1,15 @@
 @REM	
 @echo off
 setlocal
+
+@call %~dp0printbig >>%~dp0deploy.log
+@call %~dp0printbig >>%~dp0deploy.log
+@call %~dp0printbig %date% %time% >>%~dp0deploy.log
+@call %~dp0printbig Starting deploy script %~f0 >>%~dp0deploy.log
+@REM	exit /b 13
+echo.&& date /t && time /t
+echo Running XEServer deploy.
+
 if not defined ECHudsonBuilds set ECHudsonBuilds=%ECRootPath%\HBuilds
 set ArcFile=%ECHudsonBuilds%\XEServer.zip
 set ProjectPage=https://etbuild01.edifecs.local/view/8.4.0/job/XEngine Server 8.4.0/
@@ -12,7 +21,7 @@ SET CATALINA_HOME=%XESRoot%\..\XESmanager\tomcat
 
 :create_backup_dirs
 @call %~dp0create_bkp_dirs.bat
-if ERRORLEVEL 2 @echo Some directories are missing, QUIT !!! && exit /b 2
+if ERRORLEVEL 2 @echo Some directories are missing, QUIT !!! && exit /b 10
 
 :Backup_profiles
 @call %~dp0printbig Creating image with profiles ...
@@ -27,7 +36,7 @@ for /f %%F in ('dir /b %XESRoot%\profiles') do call echo y | "%EAMRoot%\Server\C
 :Download
 del %ECHudsonBuilds%\XEServer*.zip 2>nul
 set webfile=https://etbuild01.edifecs.local/view/8.4.0/job/XEngine Server 8.4.0/lastSuccessfulBuild/artifact/build-artifacts/%1
-@call %~dp0download_build.bat %ArcFile% "%ProjectPage%" || exit /b 1
+@call %~dp0download_build.bat %ArcFile% "%ProjectPage%" || exit /b 53
 if not exist %ECHudsonBuilds%\XEServer (@call %~dp0printbig Build download was unsuccessfull. & exit /b 1)
 @echo on
 
