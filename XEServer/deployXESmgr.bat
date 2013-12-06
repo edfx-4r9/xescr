@@ -9,6 +9,8 @@
 
 
 setlocal
+@call %~dp0setenv.bat | tee -a %~dpn0.log
+if ERRORLEVEL 1 @call %~dp0printlog %~dpn0 Some environment variables are not set, QUIT !!! && exit /b 2
 if not defined ECHudsonBuilds set ECHudsonBuilds=%ECRootPath%\HBuilds
 set ArcFile=%ECHudsonBuilds%\XESManager.zip
 set ProjectPage=https://etbuild01.edifecs.local/view/8.4.0/job/XES Manager 8.4.0/
@@ -75,5 +77,7 @@ sleep 30
 if ERRORLEVEL 1 @call %~dp0printlog %~dpn0 Configuration upload FAILED. && sleep 10 && exit /b 2
 @call %~dp0printlog %~dpn0 Configuration SUCCESSFULLY uploaded.
 @call %~dp0printbig Script finished.
+
+@call %~dp0printlog %~dpn0 Deploy finished.
 sleep 10
 exit /b
