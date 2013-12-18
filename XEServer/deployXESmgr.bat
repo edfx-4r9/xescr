@@ -28,6 +28,7 @@ if ERRORLEVEL 1 @call %~dp0printlog %~dpn0 Some directories are missing, QUIT !!
 
 
 :Backup_profiles
+@call %~dp0printlog %~dpn0 Downloading configuration (alerts, agents, etc.) ...
 @call %~dp0config_download.bat %ECHudsonBuilds%\workspace\xesmanager_configuration.zip
 if ERRORLEVEL 1 @call %~dp0printlog %~dpn0 Unable to create configuration backup file %ECHudsonBuilds%\workspace\xesmanager_configuration.zip & exit /b 1
 
