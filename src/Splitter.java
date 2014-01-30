@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+//import com.edifecs.etools.commons.io.SmartStream;
 import com.edifecs.etools.route.api.ICompositeMessage;
 
 import org.apache.commons.io.IOUtils;
@@ -37,31 +38,6 @@ public class Splitter implements IProcessor, Callback
     }
 
     @Override
-    public void pushMessageCallBack(
-    		IProcessingContext context,
-    		Map<String, Object> msgHeaders, 
-    		IMessage message, 
-    		java.io.ByteArrayOutputStream msgOutput 
-    		)
-//    		throws IOException, ConversionException
-    		{
-    	try {
-    	msgOutput.close();
-		byte[] outputMessageBody = msgOutput.toByteArray();
-		int messageLength = outputMessageBody.length;
-		if (suppressEmptyMessages && messageLength == 0) {
-			return;
-		}
-		++nMessageCounter;
-		msgHeaders.put(MD_SPLIT_MESSAGE_ID, nMessageCounter);
-		IMessage msgProcessed = context.getMessageFactory().createMessage(msgHeaders, outputMessageBody);
-		ICompositeMessage msgExProcessed = context.getMessageFactory().createCompositeMessage(msgHeaders, msgProcessed);
-		context.putResult( msgExProcessed );
-    	} catch (Exception e) {}
-
-    }
-
-    @Override
     public void process(IProcessingContext context) throws ProcessingException
     {
     	IMessage[] messages = context.getInputMessage().getMessages();
@@ -69,7 +45,7 @@ public class Splitter implements IProcessor, Callback
         for (int i = 0; i < messages.length; i++)
         {
             
-    		Map<String, Object> msgHeaders = context.getInputMessage().getMessages()[0].getHeaders();
+        	Map<String, Object> msgHeaders = context.getInputMessage().getMessages()[0].getHeaders();
     		
         	String suppressEmptyMessagesString = context.getContextProperties().get(SUPPRESS_EMPTY_MESSAGES);
         	suppressEmptyMessages = suppressEmptyMessagesString != null && suppressEmptyMessagesString.compareToIgnoreCase("true") == 0;
@@ -131,6 +107,31 @@ public class Splitter implements IProcessor, Callback
 	}
 
     @Override
+    public void pushMessageCallBack(
+    		IProcessingContext context,
+    		Map<String, Object> msgHeaders, 
+    		IMessage message, 
+    		java.io.ByteArrayOutputStream msgOutput 
+    		)
+//    		throws IOException, ConversionException
+    		{
+    	try {
+    	msgOutput.close();
+		byte[] outputMessageBody = msgOutput.toByteArray();
+		int messageLength = outputMessageBody.length;
+		if (suppressEmptyMessages && messageLength == 0) {
+			return;
+		}
+		++nMessageCounter;
+		msgHeaders.put(MD_SPLIT_MESSAGE_ID, nMessageCounter);
+		IMessage msgProcessed = context.getMessageFactory().createMessage(msgHeaders, outputMessageBody);
+		ICompositeMessage msgExProcessed = context.getMessageFactory().createCompositeMessage(msgHeaders, msgProcessed);
+		context.putResult( msgExProcessed );
+    	} catch (Exception e) {}
+
+    }
+
+    @Override
     public void dispose()
     {
         // Doing nothing        
@@ -169,9 +170,6 @@ class Worker
     }
     public Worker(Callback cb) {
         this.cb = cb;
-    }
-    int pleaseDoMeAFavor() {
-        return 1;
     }
     public void splitMessage(IMessage message){
 		try {
