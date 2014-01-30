@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-//import com.edifecs.etools.commons.io.SmartStream;
+import com.edifecs.etools.commons.io.SmartStream;
 import com.edifecs.etools.route.api.ICompositeMessage;
 
 import org.apache.commons.io.IOUtils;
@@ -127,7 +127,9 @@ public class Splitter implements IProcessor, Callback
 		IMessage msgProcessed = context.getMessageFactory().createMessage(msgHeaders, outputMessageBody);
 		ICompositeMessage msgExProcessed = context.getMessageFactory().createCompositeMessage(msgHeaders, msgProcessed);
 		context.putResult( msgExProcessed );
-    	} catch (Exception e) {}
+    	} catch (Exception e) {
+    		// TODO
+    	}
 
     }
 
@@ -151,7 +153,7 @@ class Worker
 {
     private Callback cb;
     private java.io.InputStream inputStream;
-    private IMessage message;
+//    private IMessage message;
     public ByteArrayOutputStream msgOutput;
     public IProcessingContext context;
     public Map<String, Object> msgHeaders;
@@ -172,8 +174,13 @@ class Worker
         this.cb = cb;
     }
     public void splitMessage(IMessage message){
-		try {
+    	SmartStream smartStream = new SmartStream();
+    	
+    	try {
 		inputStream = message.getBodyAsStream();
+		smartStream.load(inputStream);
+		inputStream = smartStream.getInputStream();
+		
 		boolean flagRecordStarted = false, flagRecordFinished = false;
 		int character, nextcharacter;
 		while ( ( character = inputStream.read()) != -1 )
@@ -198,7 +205,6 @@ class Worker
 	
 	
 			if (flagRecordFinished) {
-//					pushMessage(context, msgHeaders, splittedMessages, msgOutput);
 					flagRecordStarted = false;
 					cb.pushMessageCallBack(context, msgHeaders, message, msgOutput);
 			} else {
@@ -214,8 +220,8 @@ class Worker
 		if (!flagRecordStarted) {
 			msgOutput = new java.io.ByteArrayOutputStream();
 		}
-//		pushMessage(context, msgHeaders, splittedMessages, msgOutput);
 		cb.pushMessageCallBack(context, msgHeaders, message, msgOutput);
+		smartStream.close();
 	}
 	catch (Exception e) {
 		// TODO
