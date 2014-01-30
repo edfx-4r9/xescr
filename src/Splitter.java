@@ -45,20 +45,7 @@ public class Splitter implements IProcessor, Callback
     		)
 //    		throws IOException, ConversionException
     		{
-//    	pushMessageWithCallback();
     	try {
-//    	pushMessageWithCallback(context, msgHeaders, message, msgOutput);
-//    	} catch (Exception e) {}
-//    }
-//    
-//    public void pushMessageWithCallback(
-//    		IProcessingContext context,
-//			Map<String, Object> msgHeaders,
-//    		IMessage message, 
-//			java.io.ByteArrayOutputStream msgOutput
-//			) throws IOException, ConversionException {
-////    	message.putResult( msgOutput );
-
     	msgOutput.close();
 		byte[] outputMessageBody = msgOutput.toByteArray();
 		int messageLength = outputMessageBody.length;
@@ -105,7 +92,6 @@ public class Splitter implements IProcessor, Callback
             if (message.getBodySize()==0 || suppressEmptyMessages)
             	continue;
             if (splitByMessage) {
-//            	if (message.getBodySize()>0 || !suppressEmptyMessages)
 	            context.putResult(message);
 	            continue;
             }
@@ -115,9 +101,6 @@ public class Splitter implements IProcessor, Callback
         	java.io.InputStream inputStream = null;
         	nMessageCounter = 0;
         	
-//        	Caller caller = new Caller();
-//        	new Worker(caller).start();
-
         	Worker wrk = new Worker(this);
         	wrk.setRecSep(recSep);
         	wrk.setContext(context);
@@ -125,88 +108,8 @@ public class Splitter implements IProcessor, Callback
         	wrk.setMsgHeaders(msgHeaders);
         	wrk.splitMessage(message);
 
-//        	try {
-//        		inputStream = message.getBodyAsStream();
-//        		boolean flagRecordStarted = false, flagRecordFinished = false;
-//        		int character, nextcharacter;
-//        		while ( ( character = inputStream.read()) != -1 )
-//        		{
-//        			if (! flagRecordStarted) { 
-//        				msgOutput = new java.io.ByteArrayOutputStream();
-//        				flagRecordStarted = true;
-//        			}
-//        			flagRecordFinished = false;
-//        			int j;
-//        			nextcharacter = character ;
-//        			for (j=0; j<recSep.length; j++) {
-//        				if (j>0) {
-//        					nextcharacter = inputStream.read();
-//        					if (nextcharacter == -1) { break; }
-//        				}
-//        				if (nextcharacter != (byte)recSep[j]) {
-//        					break;
-//        				}
-//        			}
-//        			flagRecordFinished = j==recSep.length;
-//
-//
-//        			if (flagRecordFinished) {
-//        					pushMessage(context, msgHeaders, splittedMessages, msgOutput);
-//        					flagRecordStarted = false;
-//        			} else {
-//        					if (j>0) {
-//        						msgOutput.write(recSep,0,j);
-//        						if (nextcharacter>-1) msgOutput.write(nextcharacter);
-//        					} else {
-//        						msgOutput.write(character);
-//        					}
-//        			}
-//        		}
-//
-//        		if (!flagRecordStarted) {
-//    				msgOutput = new java.io.ByteArrayOutputStream();
-//        		}
-//				pushMessage(context, msgHeaders, splittedMessages, msgOutput);
-//        	}
-//        	catch (Exception e) {
-//        		// TODO
-//        		throw new ProcessingException();
-//        	}
-//
-//        	finally {
-//        		IOUtils.closeQuietly(inputStream);
-//        	}
-
         }
     }
-
-	/**
-	 * @param context
-	 * @param msgHeaders
-	 * @param splittedMessages
-	 * @param msgOutput
-	 * @throws IOException
-	 * @throws ConversionException
-	 */
-	private void pushMessage(IProcessingContext context,
-			Map<String, Object> msgHeaders,
-//			ArrayList<IMessage> splittedMessages,
-			java.io.ByteArrayOutputStream msgOutput) throws IOException,
-			ConversionException {
-		msgOutput.close();
-		byte[] outputMessageBody = msgOutput.toByteArray();
-		int messageLength = outputMessageBody.length;
-		if (suppressEmptyMessages && messageLength == 0) {
-			return;
-		}
-
-		++nMessageCounter;
-		msgHeaders.put(MD_SPLIT_MESSAGE_ID, nMessageCounter);
-
-		IMessage msgProcessed = context.getMessageFactory().createMessage(msgHeaders, outputMessageBody);
-		ICompositeMessage msgExProcessed = context.getMessageFactory().createCompositeMessage(msgHeaders, msgProcessed);
-		context.putResult( msgExProcessed );
-	}
 
 	private void separatorHexToBytes(String separatorHexString)  throws ProcessingException {
 		if (separatorHexString.compareTo("")==0) {
@@ -235,7 +138,6 @@ public class Splitter implements IProcessor, Callback
 }
 
 interface Callback {
-//	void callBackPush(java.io.ByteArrayOutputStream msgOutput, Map<String, Object> msgHeaders, IMessage message, IProcessingContext context
     public void pushMessageCallBack(
     		IProcessingContext context,
     		Map<String, Object> msgHeaders, 
@@ -245,7 +147,6 @@ interface Callback {
 }
 
 class Worker 
-//extends Thread
 {
     private Callback cb;
     private java.io.InputStream inputStream;
@@ -327,12 +228,4 @@ class Worker
 		IOUtils.closeQuietly(inputStream);
 	}
     }
-//    @Override
-//    public void run() {
-//        выполним работу 
-//        int st = pleaseDoMeAFavor();
-//        и вернём данные вызывающему по калбек интерфейсу
-//        cb.callMeBack(st);
-//        cb.callBackPush(msgOutput, msgHeaders, message, context);
-//    }
 }
