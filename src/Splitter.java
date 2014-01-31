@@ -28,11 +28,14 @@ public class Splitter implements IProcessor, Callback
     public static final String SUPPRESS_EMPTY_MESSAGES = "SuppressEmptyMessages";
     public static final String RECORD_SEPARATOR = "RecordSeparator";
 
-	boolean splitByMessage = true;
-	boolean suppressEmptyMessages = false;
-	String recSepHexString;
-    byte[] recSep;
-    int nMessageCounter;
+    private boolean splitByMessage = true;
+	private boolean suppressEmptyMessages = false;
+	private String recSepHexString;
+	private byte[] recSep;
+    private int nMessageCounter;
+    
+    private IProcessingContext cntxt = null;
+    private Map<String, Object> msgHeaders = null;
 
 	public Splitter(Map<String, String> configuration)
     {
@@ -43,22 +46,22 @@ public class Splitter implements IProcessor, Callback
     {
     	IMessage[] messages = context.getInputMessage().getMessages();
         
+    	cntxt = context;
+    	msgHeaders = context.getInputMessage().getMessages()[0].getHeaders();
+		
+    	String suppressEmptyMessagesString = context.getContextProperties().get(SUPPRESS_EMPTY_MESSAGES);
+    	suppressEmptyMessages = suppressEmptyMessagesString != null && suppressEmptyMessagesString.compareToIgnoreCase("true") == 0;
+    	recSepHexString = context.getContextProperties().get(RECORD_SEPARATOR);
+    	if (recSepHexString == null) { 
+    		splitByMessage = true;
+    	} else {
+    		splitByMessage = false;
+	    	separatorHexToBytes(recSepHexString);
+			msgHeaders.put(RECORD_SEPARATOR, recSepHexString);
+    	}
+
         for (int i = 0; i < messages.length; i++)
         {
-            
-        	Map<String, Object> msgHeaders = context.getInputMessage().getMessages()[0].getHeaders();
-    		
-        	String suppressEmptyMessagesString = context.getContextProperties().get(SUPPRESS_EMPTY_MESSAGES);
-        	suppressEmptyMessages = suppressEmptyMessagesString != null && suppressEmptyMessagesString.compareToIgnoreCase("true") == 0;
-        	recSepHexString = context.getContextProperties().get(RECORD_SEPARATOR);
-        	if (recSepHexString == null) { 
-        		splitByMessage = true;
-        	} else {
-        		splitByMessage = false;
-    	    	separatorHexToBytes(recSepHexString);
-    			msgHeaders.put(RECORD_SEPARATOR, recSepHexString);
-        	}
-        	
             IMessage message = messages[i];
             int nMessageID = i + 1;
             Map <String, Object> md = message.getMessageDescriptor();
@@ -66,27 +69,21 @@ public class Splitter implements IProcessor, Callback
             md.put(MD_SPLIT_MESSAGE_COUNT, messages.length);
             md.put(MD_SPLIT_MESSAGE_LAST, String.valueOf(nMessageID == messages.length));
             md.put(MD_SPLIT_CORRELATION_ID, context.getInputMessage().getID());
-            if (message.getBodySize()==0 || suppressEmptyMessages)
-            	continue;
-            if (splitByMessage) {
-	            context.putResult(message);
-	            continue;
+            if (!suppressEmptyMessages || message.getBodySize()>0){
+//            	continue;
+	            if (splitByMessage) {
+		            context.putResult(message);
+	            } else {
+		        	java.io.InputStream inputStream = null;
+		        	nMessageCounter = 0;
+		        	
+		        	Worker wrk = new Worker(this);
+		        	try {
+			        	inputStream = message.getBodyAsStream();
+			        	wrk.splitMessageByRecords(inputStream, recSep);
+		        	} catch (Exception e) { /* TODO */ }
+	            }
             }
-
-//            ArrayList<IMessage> splittedMessages = new ArrayList<IMessage>();
-//        	java.io.ByteArrayOutputStream msgOutput = null;
-        	java.io.InputStream inputStream = null;
-        	nMessageCounter = 0;
-        	
-        	Worker wrk = new Worker(this);
-        	wrk.setRecSep(recSep);
-        	wrk.setContext(context);
-//        	?
-        	wrk.setInputStream(inputStream);
-//        	?
-        	wrk.setMsgHeaders(msgHeaders);
-        	wrk.splitMessage(message);
-
         }
     }
 
@@ -110,30 +107,24 @@ public class Splitter implements IProcessor, Callback
 	}
 
     @Override
-    public void pushMessageCallBack(
-    		IProcessingContext context,
-    		Map<String, Object> msgHeaders, 
-    		IMessage message, 
-//    		java.io.ByteArrayOutputStream msgOutput 
-    		SmartStream msgOutput
-    		)
+    public void pushMessageCallBack(SmartStream msgOutput)
 //    		throws IOException, ConversionException
     		{
+    	IProcessingContext context = this.cntxt;
+//    	Map<String, Object> msgHeaders = this.msgHeaders;
+//    	msgHeaders = context.getInputMessage().getMessages()[0].getHeaders();
     	try {
-    	msgOutput.close();
-//		byte[] outputMessageBody = msgOutput.toByteArray();
-//		int messageLength = outputMessageBody.length;
-//		if (suppressEmptyMessages && messageLength == 0) {
-//			return;
-//		}
-		++nMessageCounter;
-		msgHeaders.put(MD_SPLIT_MESSAGE_ID, nMessageCounter);
-//		IMessage msgProcessed = context.getMessageFactory().createMessage(msgHeaders, outputMessageBody);
-		IMessage msgProcessed = context.getMessageFactory().createMessage(msgHeaders, msgOutput.getInputStream());
-		ICompositeMessage msgExProcessed = context.getMessageFactory().createCompositeMessage(msgHeaders, msgProcessed);
-		context.putResult( msgExProcessed );
+	    	msgOutput.close();
+			++nMessageCounter;
+			if (!suppressEmptyMessages || msgOutput.getByteCount() > 0) {
+				msgHeaders.put(MD_SPLIT_MESSAGE_ID, nMessageCounter);
+				IMessage msgProcessed = context.getMessageFactory().createMessage(msgHeaders, msgOutput.getInputStream());
+				ICompositeMessage msgExProcessed = context.getMessageFactory().createCompositeMessage(msgHeaders, msgProcessed);
+				context.putResult( msgExProcessed );
+			}
     	} catch (Exception e) {
     		// TODO
+    		e=e;
     	}
 
     }
@@ -146,58 +137,28 @@ public class Splitter implements IProcessor, Callback
 }
 
 interface Callback {
-    public void pushMessageCallBack(
-    		IProcessingContext context,
-    		Map<String, Object> msgHeaders, 
-    		IMessage message, 
-//    		java.io.ByteArrayOutputStream msgOutput 
-    		SmartStream msgOutput
-			);
+    public void pushMessageCallBack(SmartStream msgOutput);
 }
 
 class Worker 
 {
     private Callback cb;
-    private java.io.InputStream inputStream;
-//    private IMessage message;
-//    public ByteArrayOutputStream msgOutput;
     public SmartStream msgOutput;
-    public IProcessingContext context;
-    public Map<String, Object> msgHeaders;
-    public void setMsgHeaders(Map<String, Object> msgHeaders){
-    	this.msgHeaders = msgHeaders;
-    }
-    public void setInputStream(java.io.InputStream inputStream)
-    {
-    	this.inputStream = inputStream;
-    }
-    public void setContext(IProcessingContext context){
-    	this.context = context;
-    }
-    public byte[] recSep;
-    public void setRecSep(byte[] recordSeparator){
-    	this.recSep = recordSeparator;
-    }
     public Worker(Callback cb) {
         this.cb = cb;
     }
-    public void splitMessage(IMessage message){
+    public void splitMessageByRecords(InputStream inputStream, byte[] recSep){
     	SmartStream smartStream = new SmartStream();
     	
     	try {
-		inputStream = message.getBodyAsStream();
+//		inputStream = message.getBodyAsStream();
 		inputStream = new BufferedInputStream(inputStream);
-		
-//		smartStream.load(inputStream);
-//		inputStream = smartStream.getInputStream();
 		
 		boolean flagRecordStarted = false, flagRecordFinished = false;
 		int character, nextcharacter;
 		while ( ( character = inputStream.read()) != -1 )
 		{
 			if (! flagRecordStarted) { 
-//				msgOutput = new java.io.ByteArrayOutputStream();
-//				msgOutput = new java.io.ByteArrayOutputStream();
 				msgOutput = new SmartStream();
 				flagRecordStarted = true;
 			}
@@ -218,7 +179,8 @@ class Worker
 	
 			if (flagRecordFinished) {
 					flagRecordStarted = false;
-					cb.pushMessageCallBack(context, msgHeaders, message, msgOutput);
+//					cb.pushMessageCallBack(context, msgHeaders, message, msgOutput);
+					cb.pushMessageCallBack(msgOutput);
 			} else {
 					if (j>0) {
 						msgOutput.write(recSep,0,j);
@@ -232,7 +194,8 @@ class Worker
 		if (!flagRecordStarted) {
 			msgOutput = new SmartStream();
 		}
-		cb.pushMessageCallBack(context, msgHeaders, message, msgOutput);
+//		cb.pushMessageCallBack(context, msgHeaders, message, msgOutput);
+		cb.pushMessageCallBack(msgOutput);
 		smartStream.close();
 	}
 	catch (Exception e) {
