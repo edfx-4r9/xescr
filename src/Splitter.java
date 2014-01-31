@@ -70,7 +70,6 @@ public class Splitter implements IProcessor, Callback
             md.put(MD_SPLIT_MESSAGE_LAST, String.valueOf(nMessageID == messages.length));
             md.put(MD_SPLIT_CORRELATION_ID, context.getInputMessage().getID());
             if (!suppressEmptyMessages || message.getBodySize()>0){
-//            	continue;
 	            if (splitByMessage) {
 		            context.putResult(message);
 	            } else {
@@ -111,8 +110,6 @@ public class Splitter implements IProcessor, Callback
 //    		throws IOException, ConversionException
     		{
     	IProcessingContext context = this.cntxt;
-//    	Map<String, Object> msgHeaders = this.msgHeaders;
-//    	msgHeaders = context.getInputMessage().getMessages()[0].getHeaders();
     	try {
 	    	msgOutput.close();
 			++nMessageCounter;
@@ -151,7 +148,6 @@ class Worker
     	SmartStream smartStream = new SmartStream();
     	
     	try {
-//		inputStream = message.getBodyAsStream();
 		inputStream = new BufferedInputStream(inputStream);
 		
 		boolean flagRecordStarted = false, flagRecordFinished = false;
@@ -179,7 +175,6 @@ class Worker
 	
 			if (flagRecordFinished) {
 					flagRecordStarted = false;
-//					cb.pushMessageCallBack(context, msgHeaders, message, msgOutput);
 					cb.pushMessageCallBack(msgOutput);
 			} else {
 					if (j>0) {
@@ -194,7 +189,6 @@ class Worker
 		if (!flagRecordStarted) {
 			msgOutput = new SmartStream();
 		}
-//		cb.pushMessageCallBack(context, msgHeaders, message, msgOutput);
 		cb.pushMessageCallBack(msgOutput);
 		smartStream.close();
 	}
