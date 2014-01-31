@@ -2,9 +2,9 @@ package com.edifecs.etools.xeserver.component.splitter;
 
 import java.util.Map;
 import java.io.BufferedInputStream;
+import java.io.InputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 
 import com.edifecs.etools.commons.io.SmartStream;
@@ -73,8 +73,8 @@ public class Splitter implements IProcessor, Callback
 	            continue;
             }
 
-            ArrayList<IMessage> splittedMessages = new ArrayList<IMessage>();
-        	java.io.ByteArrayOutputStream msgOutput = null;
+//            ArrayList<IMessage> splittedMessages = new ArrayList<IMessage>();
+//        	java.io.ByteArrayOutputStream msgOutput = null;
         	java.io.InputStream inputStream = null;
         	nMessageCounter = 0;
         	
@@ -114,20 +114,22 @@ public class Splitter implements IProcessor, Callback
     		IProcessingContext context,
     		Map<String, Object> msgHeaders, 
     		IMessage message, 
-    		java.io.ByteArrayOutputStream msgOutput 
+//    		java.io.ByteArrayOutputStream msgOutput 
+    		SmartStream msgOutput
     		)
 //    		throws IOException, ConversionException
     		{
     	try {
     	msgOutput.close();
-		byte[] outputMessageBody = msgOutput.toByteArray();
-		int messageLength = outputMessageBody.length;
-		if (suppressEmptyMessages && messageLength == 0) {
-			return;
-		}
+//		byte[] outputMessageBody = msgOutput.toByteArray();
+//		int messageLength = outputMessageBody.length;
+//		if (suppressEmptyMessages && messageLength == 0) {
+//			return;
+//		}
 		++nMessageCounter;
 		msgHeaders.put(MD_SPLIT_MESSAGE_ID, nMessageCounter);
-		IMessage msgProcessed = context.getMessageFactory().createMessage(msgHeaders, outputMessageBody);
+//		IMessage msgProcessed = context.getMessageFactory().createMessage(msgHeaders, outputMessageBody);
+		IMessage msgProcessed = context.getMessageFactory().createMessage(msgHeaders, msgOutput.getInputStream());
 		ICompositeMessage msgExProcessed = context.getMessageFactory().createCompositeMessage(msgHeaders, msgProcessed);
 		context.putResult( msgExProcessed );
     	} catch (Exception e) {
@@ -148,7 +150,8 @@ interface Callback {
     		IProcessingContext context,
     		Map<String, Object> msgHeaders, 
     		IMessage message, 
-    		java.io.ByteArrayOutputStream msgOutput 
+//    		java.io.ByteArrayOutputStream msgOutput 
+    		SmartStream msgOutput
 			);
 }
 
@@ -157,7 +160,8 @@ class Worker
     private Callback cb;
     private java.io.InputStream inputStream;
 //    private IMessage message;
-    public ByteArrayOutputStream msgOutput;
+//    public ByteArrayOutputStream msgOutput;
+    public SmartStream msgOutput;
     public IProcessingContext context;
     public Map<String, Object> msgHeaders;
     public void setMsgHeaders(Map<String, Object> msgHeaders){
@@ -193,8 +197,8 @@ class Worker
 		{
 			if (! flagRecordStarted) { 
 //				msgOutput = new java.io.ByteArrayOutputStream();
-				msgOutput = new java.io.ByteArrayOutputStream();
-				
+//				msgOutput = new java.io.ByteArrayOutputStream();
+				msgOutput = new SmartStream();
 				flagRecordStarted = true;
 			}
 			flagRecordFinished = false;
@@ -226,7 +230,7 @@ class Worker
 		}
 	
 		if (!flagRecordStarted) {
-			msgOutput = new java.io.ByteArrayOutputStream();
+			msgOutput = new SmartStream();
 		}
 		cb.pushMessageCallBack(context, msgHeaders, message, msgOutput);
 		smartStream.close();
