@@ -1,6 +1,7 @@
 package com.edifecs.etools.xeserver.component.splitter;
 
 import java.util.Map;
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -80,7 +81,9 @@ public class Splitter implements IProcessor, Callback
         	Worker wrk = new Worker(this);
         	wrk.setRecSep(recSep);
         	wrk.setContext(context);
+//        	?
         	wrk.setInputStream(inputStream);
+//        	?
         	wrk.setMsgHeaders(msgHeaders);
         	wrk.splitMessage(message);
 
@@ -160,7 +163,8 @@ class Worker
     public void setMsgHeaders(Map<String, Object> msgHeaders){
     	this.msgHeaders = msgHeaders;
     }
-    public void setInputStream(java.io.InputStream inputStream){
+    public void setInputStream(java.io.InputStream inputStream)
+    {
     	this.inputStream = inputStream;
     }
     public void setContext(IProcessingContext context){
@@ -178,15 +182,19 @@ class Worker
     	
     	try {
 		inputStream = message.getBodyAsStream();
-		smartStream.load(inputStream);
-		inputStream = smartStream.getInputStream();
+		inputStream = new BufferedInputStream(inputStream);
+		
+//		smartStream.load(inputStream);
+//		inputStream = smartStream.getInputStream();
 		
 		boolean flagRecordStarted = false, flagRecordFinished = false;
 		int character, nextcharacter;
 		while ( ( character = inputStream.read()) != -1 )
 		{
 			if (! flagRecordStarted) { 
+//				msgOutput = new java.io.ByteArrayOutputStream();
 				msgOutput = new java.io.ByteArrayOutputStream();
+				
 				flagRecordStarted = true;
 			}
 			flagRecordFinished = false;
