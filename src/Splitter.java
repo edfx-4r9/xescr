@@ -18,7 +18,7 @@ import com.edifecs.etools.route.api.IProcessingContext;
 import com.edifecs.etools.route.api.ProcessingException;
 import com.edifecs.etools.route.api.integration.IProcessor;
 
-public class Splitter implements IProcessor, Callback
+public class Splitter implements IProcessor, SplitterCallback
 {
     public static final String  MD_SPLIT_MESSAGE_ID     = "SPLIT_MESSAGE_ID";
     public static final String  MD_SPLIT_MESSAGE_COUNT  = "SPLIT_MESSAGE_COUNT";
@@ -84,7 +84,7 @@ public class Splitter implements IProcessor, Callback
                     java.io.InputStream inputStream = null;
                     nMessageCounter = 0;
 
-                    Worker wrk = new Worker(this);
+                    SplitterCallbackRunner wrk = new SplitterCallbackRunner(this);
                     try
                     {
                         inputStream = message.getBodyAsStream();
@@ -158,95 +158,3 @@ public class Splitter implements IProcessor, Callback
     }
 }
 
-interface Callback
-{
-    public void pushMessageCallBack(SmartStream msgOutput);
-}
-
-class Worker
-{
-    private Callback   cb;
-    public SmartStream msgOutput;
-
-    public Worker(Callback cb)
-    {
-        this.cb = cb;
-    }
-
-    public void splitMessageByRecords(InputStream inputStream,
-                                      byte[] recSep)
-    {
-        SmartStream smartStream = new SmartStream();
-
-        try
-        {
-            inputStream = new BufferedInputStream(inputStream);
-
-            boolean flagRecordStarted = false, flagRecordFinished = false;
-            int character, nextcharacter;
-            while ((character = inputStream.read()) != -1)
-            {
-                if (!flagRecordStarted)
-                {
-                    msgOutput = new SmartStream();
-                    flagRecordStarted = true;
-                }
-                flagRecordFinished = false;
-                int j;
-                nextcharacter = character;
-                for (j = 0; j < recSep.length; j++)
-                {
-                    if (j > 0)
-                    {
-                        nextcharacter = inputStream.read();
-                        if (nextcharacter == -1)
-                        {
-                            break;
-                        }
-                    }
-                    if (nextcharacter != (byte) recSep[j])
-                    {
-                        break;
-                    }
-                }
-                flagRecordFinished = j == recSep.length;
-
-                if (flagRecordFinished)
-                {
-                    flagRecordStarted = false;
-                    cb.pushMessageCallBack(msgOutput);
-                }
-                else
-                {
-                    if (j > 0)
-                    {
-                        msgOutput.write(recSep, 0, j);
-                        if (nextcharacter > -1)
-                            msgOutput.write(nextcharacter);
-                    }
-                    else
-                    {
-                        msgOutput.write(character);
-                    }
-                }
-            }
-
-            if (!flagRecordStarted)
-            {
-                msgOutput = new SmartStream();
-            }
-            cb.pushMessageCallBack(msgOutput);
-            smartStream.close();
-        }
-        catch (Exception e)
-        {
-            // TODO
-            //		throw new ProcessingException();
-        }
-
-        finally
-        {
-            IOUtils.closeQuietly(inputStream);
-        }
-    }
-}
