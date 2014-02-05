@@ -2,32 +2,22 @@ package com.edifecs.etools.xeserver.component.splitter;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
 
 import com.edifecs.etools.commons.io.SmartStream;
-import com.edifecs.etools.route.api.ICompositeMessage;
-
 import org.apache.commons.io.IOUtils;
 
-import com.edifecs.etools.route.api.ConversionException;
-import com.edifecs.etools.route.api.IMessage;
-import com.edifecs.etools.route.api.IProcessingContext;
-import com.edifecs.etools.route.api.ProcessingException;
-import com.edifecs.etools.route.api.integration.IProcessor;
 
 interface SplitterCallback
 {
     public void pushMessageCallBack(SmartStream msgOutput);
 }
 
-public class SplitterCallbackRunner
+public class StreamSplitter
 {
     private SplitterCallback cb;
     public SmartStream       msgOutput;
 
-    public SplitterCallbackRunner(SplitterCallback cb)
+    public StreamSplitter(SplitterCallback cb)
     {
         this.cb = cb;
     }

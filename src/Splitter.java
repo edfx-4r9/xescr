@@ -84,7 +84,7 @@ public class Splitter implements IProcessor, SplitterCallback
                     java.io.InputStream inputStream = null;
                     nMessageCounter = 0;
 
-                    SplitterCallbackRunner wrk = new SplitterCallbackRunner(this);
+                    StreamSplitter wrk = new StreamSplitter(this);
                     try
                     {
                         inputStream = message.getBodyAsStream();
