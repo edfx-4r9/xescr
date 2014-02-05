@@ -1,16 +1,13 @@
 package com.edifecs.etools.xeserver.component.splitter;
 
 import java.util.Map;
-import java.io.BufferedInputStream;
-import java.io.InputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
+import java.io.OutputStream;
+import org.apache.commons.io.IOUtils;
+//import java.lang.Exception;
+import java.lang.IllegalArgumentException;
 
 import com.edifecs.etools.commons.io.SmartStream;
 import com.edifecs.etools.route.api.ICompositeMessage;
-
-import org.apache.commons.io.IOUtils;
 
 import com.edifecs.etools.route.api.ConversionException;
 import com.edifecs.etools.route.api.IMessage;
@@ -127,20 +124,27 @@ public class Splitter implements IProcessor, SplitterCallback
     }
 
     @Override
-    public void pushMessageCallBack(SmartStream msgOutput)
+    public void pushMessageCallBack(OutputStream msgOutput)
     //    		throws IOException, ConversionException
     {
         try
         {
             msgOutput.close();
-            ++nMessageCounter;
-            if (!suppressEmptyMessages || msgOutput.getByteCount() > 0)
+            if (! (msgOutput instanceof SmartStream))
             {
-                msgHeaders.put(MD_SPLIT_MESSAGE_ID, nMessageCounter);
-                msgHeaders.put(MD_SPLIT_MESSAGE_LENGTH, msgOutput.getByteCount());
-                IMessage msgProcessed = cntxt.getMessageFactory().createMessage(msgHeaders, msgOutput.getInputStream());
-                ICompositeMessage msgExProcessed = cntxt.getMessageFactory().createCompositeMessage(msgHeaders, msgProcessed);
-                cntxt.putResult(msgExProcessed);
+                throw new IllegalArgumentException("SmartStream type expected for message creation");
+            }
+            else
+            {
+                if (!suppressEmptyMessages || ((SmartStream)msgOutput).getByteCount() > 0)
+                {
+                    ++nMessageCounter;
+                    msgHeaders.put(MD_SPLIT_MESSAGE_ID, nMessageCounter);
+                    msgHeaders.put(MD_SPLIT_MESSAGE_LENGTH, ((SmartStream)msgOutput).getByteCount());
+                    IMessage msgProcessed = cntxt.getMessageFactory().createMessage(msgHeaders, ((SmartStream)msgOutput).getInputStream());
+                    ICompositeMessage msgExProcessed = cntxt.getMessageFactory().createCompositeMessage(msgHeaders, msgProcessed);
+                    cntxt.putResult(msgExProcessed);
+                }
             }
         }
         catch (Exception e)
@@ -149,6 +153,11 @@ public class Splitter implements IProcessor, SplitterCallback
             e = e;
         }
 
+    }
+
+    @Override
+    public OutputStream getOutputStream(){
+        return new SmartStream();
     }
 
     @Override

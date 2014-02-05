@@ -2,20 +2,22 @@ package com.edifecs.etools.xeserver.component.splitter;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 
-import com.edifecs.etools.commons.io.SmartStream;
+//import com.edifecs.etools.commons.io.SmartStream;
 import org.apache.commons.io.IOUtils;
 
 
 interface SplitterCallback
 {
-    public void pushMessageCallBack(SmartStream msgOutput);
+    public void pushMessageCallBack(OutputStream msgOutput);
+    public OutputStream getOutputStream();
 }
 
 public class StreamSplitter
 {
     private SplitterCallback cb;
-    public SmartStream       msgOutput;
+    OutputStream msgOutput;
 
     public StreamSplitter(SplitterCallback cb)
     {
@@ -25,11 +27,12 @@ public class StreamSplitter
     public void splitMessageByRecords(InputStream inputStream,
                                       byte[] recSep)
     {
-        SmartStream smartStream = new SmartStream();
+//        SmartStream smartStream = new SmartStream();
 
         try
         {
             inputStream = new BufferedInputStream(inputStream);
+            long msgLength;
 
             boolean flagRecordStarted = false, flagRecordFinished = false;
             int character, nextcharacter;
@@ -37,7 +40,9 @@ public class StreamSplitter
             {
                 if (!flagRecordStarted)
                 {
-                    msgOutput = new SmartStream();
+//                    msgOutput = new SmartStream();
+                    msgOutput = cb.getOutputStream();
+                    msgLength = 0;
                     flagRecordStarted = true;
                 }
                 flagRecordFinished = false;
@@ -82,10 +87,12 @@ public class StreamSplitter
 
             if (!flagRecordStarted)
             {
-                msgOutput = new SmartStream();
+//                msgOutput = new SmartStream();
+                msgOutput = cb.getOutputStream();
+                msgLength = 0;
             }
             cb.pushMessageCallBack(msgOutput);
-            smartStream.close();
+//            smartStream.close();
         }
         catch (Exception e)
         {
