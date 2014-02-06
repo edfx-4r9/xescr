@@ -23,13 +23,13 @@ public class StreamSplitter
                                       byte[] recSep,
                                       SplitterCallback cb)
     {
-        if (inputStream == null) 
-        {
-            throw new IllegalArgumentException("Input stream cannot be null.");
-        }
         if (cb == null) 
         {
             throw new IllegalArgumentException("Callback function cannot be null.");
+        }
+        if (inputStream == null) 
+        {
+            throw new IllegalArgumentException("Input stream cannot be null.");
         }
         if (recSep == null) 
         {
