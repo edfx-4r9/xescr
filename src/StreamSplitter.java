@@ -1,18 +1,16 @@
 package com.edifecs.etools.xeserver.component.splitter;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.io.OutputStream;
-
 import java.util.Arrays;
 
-//import com.edifecs.etools.commons.io.SmartStream;
 import org.apache.commons.io.IOUtils;
-
 
 interface SplitterCallback
 {
-    public void pushMessageCallBack(OutputStream msgOutput);
+    public void pushMessageCallBack(OutputStream msgOutput) throws IOException;
+
     public OutputStream getOutputStream();
 }
 
@@ -21,17 +19,17 @@ public class StreamSplitter
 
     public void splitMessageByRecords(BufferedInputStream inputStream,
                                       byte[] recSep,
-                                      SplitterCallback cb)
+                                      SplitterCallback cb) throws IOException
     {
-        if (cb == null) 
+        if (cb == null)
         {
             throw new IllegalArgumentException("Callback function cannot be null.");
         }
-        if (inputStream == null) 
+        if (inputStream == null)
         {
             throw new IllegalArgumentException("Input stream cannot be null.");
         }
-        if (recSep == null) 
+        if (recSep == null)
         {
             throw new IllegalArgumentException("Incorrect record separator");
         }
@@ -48,40 +46,37 @@ public class StreamSplitter
             int character;
             while ((character = inputStream.read()) != -1)
             {
-                inputStream.mark(markLimit-1);
-                if (character == (byte)recSep[0])
+                inputStream.mark(markLimit - 1);
+                if (character == (byte) recSep[0])
                 {
-                    int bytesRead = inputStream.read(recSepBuffer, 1, markLimit-1);
-                    if (bytesRead == markLimit-1 && Arrays.equals(recSepBuffer, recSep))
+                    int bytesRead = inputStream.read(recSepBuffer, 1, markLimit - 1);
+                    if (bytesRead == markLimit - 1 && Arrays.equals(recSepBuffer, recSep))
                     {
-//                        Record separator found
+                        // Record separator found
                         msgOutput.close();
                         cb.pushMessageCallBack(msgOutput);
                         msgOutput = cb.getOutputStream();
-                    } else {
-//                        Record separator not found
+                    }
+                    else
+                    {
+                        // Record separator not found
                         inputStream.reset();
                         msgOutput.write(character);
                     }
-                } else {
+                }
+                else
+                {
                     msgOutput.write(character);
                 }
 
             }
 
-//            Close final output stream 
+            // Close final output stream 
             {
                 msgOutput.close();
                 cb.pushMessageCallBack(msgOutput);
             }
         }
-        catch (Exception e)
-        {
-            // TODO
-            //      throw new ProcessingException();
-            e = e;
-        }
-
         finally
         {
             IOUtils.closeQuietly(inputStream);
