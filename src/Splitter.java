@@ -81,11 +81,11 @@ public class Splitter implements IProcessor, SplitterCallback
                     java.io.InputStream inputStream = null;
                     nMessageCounter = 0;
 
-                    StreamSplitter wrk = new StreamSplitter(this);
+                    StreamSplitter wrk = new StreamSplitter();
                     try
                     {
                         inputStream = message.getBodyAsStream();
-                        wrk.splitMessageByRecords(inputStream, recSep);
+                        wrk.splitMessageByRecords(inputStream, recSep, this);
                     }
                     catch (Exception e)
                     { 
@@ -129,7 +129,7 @@ public class Splitter implements IProcessor, SplitterCallback
     {
         try
         {
-            msgOutput.close();
+//            msgOutput.close();
             if (! (msgOutput instanceof SmartStream))
             {
                 throw new IllegalArgumentException("SmartStream type expected for message creation");

@@ -16,23 +16,23 @@ interface SplitterCallback
 
 public class StreamSplitter
 {
-    private SplitterCallback cb;
-    OutputStream msgOutput;
+//    private SplitterCallback cb;
+//    OutputStream msgOutput;
 
-    public StreamSplitter(SplitterCallback cb)
-    {
-        this.cb = cb;
-    }
+//    public StreamSplitter(SplitterCallback cb)
+//    {
+//        this.cb = cb;
+//    }
 
     public void splitMessageByRecords(InputStream inputStream,
-                                      byte[] recSep)
+                                      byte[] recSep,
+                                      SplitterCallback cb)
     {
-//        SmartStream smartStream = new SmartStream();
+        OutputStream msgOutput = null;
 
         try
         {
             inputStream = new BufferedInputStream(inputStream);
-            long msgLength;
 
             boolean flagRecordStarted = false, flagRecordFinished = false;
             int character, nextcharacter;
@@ -40,9 +40,7 @@ public class StreamSplitter
             {
                 if (!flagRecordStarted)
                 {
-//                    msgOutput = new SmartStream();
                     msgOutput = cb.getOutputStream();
-                    msgLength = 0;
                     flagRecordStarted = true;
                 }
                 flagRecordFinished = false;
@@ -68,6 +66,7 @@ public class StreamSplitter
                 if (flagRecordFinished)
                 {
                     flagRecordStarted = false;
+                    msgOutput.close();
                     cb.pushMessageCallBack(msgOutput);
                 }
                 else
@@ -87,12 +86,10 @@ public class StreamSplitter
 
             if (!flagRecordStarted)
             {
-//                msgOutput = new SmartStream();
                 msgOutput = cb.getOutputStream();
-                msgLength = 0;
             }
+            msgOutput.close();
             cb.pushMessageCallBack(msgOutput);
-//            smartStream.close();
         }
         catch (Exception e)
         {
