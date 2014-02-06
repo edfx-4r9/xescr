@@ -78,13 +78,13 @@ public class Splitter implements IProcessor, SplitterCallback
                 }
                 else
                 {
-                    java.io.InputStream inputStream = null;
+                    java.io.BufferedInputStream inputStream = null;
                     nMessageCounter = 0;
 
                     StreamSplitter wrk = new StreamSplitter();
                     try
                     {
-                        inputStream = message.getBodyAsStream();
+                        inputStream = new java.io.BufferedInputStream(message.getBodyAsStream());
                         wrk.splitMessageByRecords(inputStream, recSep, this);
                     }
                     catch (Exception e)
