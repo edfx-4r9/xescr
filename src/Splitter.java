@@ -4,14 +4,11 @@ import java.util.Map;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.apache.commons.io.IOUtils;
-
-//import java.lang.Exception;
 import java.lang.IllegalArgumentException;
+import org.apache.commons.io.IOUtils;
 
 import com.edifecs.etools.commons.io.SmartStream;
 import com.edifecs.etools.route.api.ICompositeMessage;
-import com.edifecs.etools.route.api.ConversionException;
 import com.edifecs.etools.route.api.IMessage;
 import com.edifecs.etools.route.api.IProcessingContext;
 import com.edifecs.etools.route.api.ProcessingException;
@@ -26,6 +23,7 @@ public class Splitter implements IProcessor, SplitterCallback
 
     public static final String  SUPPRESS_EMPTY_MESSAGES = "SuppressEmptyMessages";
     public static final String  RECORD_SEPARATOR        = "RecordSeparator";
+    public static final String  DEFAULT_RECORD_SEPARATOR = "0x0d, 0x0a";
     public static final String  MD_SPLIT_MESSAGE_LENGTH = "SPLITTED_MESSAGE_LENGTH";
 
     private boolean             splitByMessage          = true;
@@ -80,18 +78,16 @@ public class Splitter implements IProcessor, SplitterCallback
                 }
                 else
                 {
-                    java.io.BufferedInputStream inputStream = null;
+//                    java.io.BufferedInputStream inputStream = null;
                     nMessageCounter = 0;
 
                     StreamSplitter wrk = new StreamSplitter();
-                    try
+                    try (java.io.BufferedInputStream inputStream = new java.io.BufferedInputStream(message.getBodyAsStream()))
                     {
-                        inputStream = new java.io.BufferedInputStream(message.getBodyAsStream());
                         wrk.splitMessageByRecords(inputStream, recSep, this);
                     }
                     catch (Exception e)
                     {
-                        // TODO
                         throw new ProcessingException(e);
                     }
                 }
@@ -101,9 +97,9 @@ public class Splitter implements IProcessor, SplitterCallback
 
     private void separatorHexToBytes(String separatorHexString) throws ProcessingException
     {
-        if (separatorHexString.compareTo("") == 0)
+        if (separatorHexString.length() == 0)
         {
-            recSepHexString = "0x0d, 0x0a";
+            recSepHexString = DEFAULT_RECORD_SEPARATOR;
             recSep = new byte[2];
             recSep[0] = 13;
             recSep[1] = 10;
@@ -150,7 +146,6 @@ public class Splitter implements IProcessor, SplitterCallback
         }
         catch (Exception e)
         {
-            // TODO
             throw new IOException(e.getCause());
         }
 
