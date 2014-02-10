@@ -30,8 +30,9 @@ public class Splitter implements IProcessor, SplitterCallback {
 	private boolean suppressEmptyMessages = false;
 	// private int nMessageCounter;
 
-	private HashMap<Splitter, Map<String, Object>> mapper_headers = new HashMap<Splitter, Map<String, Object>>();
-	private HashMap<Splitter, IProcessingContext> mapper_context = new HashMap<Splitter, IProcessingContext>();
+//	private HashMap<Splitter, Map<String, Object>> mapper_headers = new HashMap<Splitter, Map<String, Object>>();
+//	private HashMap<Splitter, IProcessingContext> mapper_context = new HashMap<Splitter, IProcessingContext>();
+	private HashMap<Splitter, MapperUnit> mapper_unit = new HashMap<Splitter, MapperUnit>();
 
 	public Splitter(Map<String, String> configuration) {
 	}
@@ -39,7 +40,9 @@ public class Splitter implements IProcessor, SplitterCallback {
 	@Override
 	public void process(IProcessingContext context) throws ProcessingException {
 		IMessage[] messages = context.getInputMessage().getMessages();
-		mapper_context.put(this, context);
+//		mapper_context.put(this, context);
+		mapper_unit.put(this, new MapperUnit());
+		mapper_unit.get(this).context = context;
 
 		String suppressEmptyMessagesString = context.getContextProperties()
 				.get(SUPPRESS_EMPTY_MESSAGES);
@@ -69,7 +72,9 @@ public class Splitter implements IProcessor, SplitterCallback {
 				if (splitByMessage) {
 					context.putResult(message);
 				} else {
-					mapper_headers.put(this, msgHeaders);
+//					mapper_headers.put(this, msgHeaders);
+					mapper_unit.get(this).nMessageCounter = 0;
+					mapper_unit.get(this).headers = msgHeaders;
 					byte[] recSepBytes = separatorHexToBytes(recSepHexString);
 					msgHeaders.put(RECORD_SEPARATOR, recSepHexString);
 					// nMessageCounter = 0;
@@ -83,12 +88,13 @@ public class Splitter implements IProcessor, SplitterCallback {
 						throw new ProcessingException(e);
 					} finally {
 						// remove from map
-						mapper_headers.remove(this);
+//						mapper_headers.remove(this);
 					}
 				}
 			}
 		}
-		mapper_context.remove(this);
+//		mapper_context.remove(this);
+		mapper_unit.remove(this);
 	}
 
 	private byte[] separatorHexToBytes(String separatorHexString)
@@ -97,7 +103,8 @@ public class Splitter implements IProcessor, SplitterCallback {
 		if (separatorHexString.length() == 0) {
 			separatorHexString = DEFAULT_RECORD_SEPARATOR;
 		}
-		mapper_headers.get(this).put(RECORD_SEPARATOR, separatorHexString);
+//		mapper_headers.get(this).put(RECORD_SEPARATOR, separatorHexString);
+		mapper_unit.get(this).headers.put(RECORD_SEPARATOR, separatorHexString);
 		String[] recSepBytes = separatorHexString.split("[ ,]+");
 		recSep = new byte[recSepBytes.length];
 		try {
@@ -118,12 +125,16 @@ public class Splitter implements IProcessor, SplitterCallback {
 				throw new IllegalArgumentException(
 						"SmartStream type expected for message creation");
 			} else {
-				Map<String, Object> msgHeaders = mapper_headers.get(this);
-				IProcessingContext cntxt = mapper_context.get(this);
+//				Map<String, Object> msgHeaders = mapper_headers.get(this);
+//				IProcessingContext cntxt = mapper_context.get(this);
+				Map<String, Object> msgHeaders = mapper_unit.get(this).headers;
+				IProcessingContext cntxt = mapper_unit.get(this).context;
 				if (!suppressEmptyMessages
 						|| ((SmartStream) msgOutput).getByteCount() > 0) {
 					// ++nMessageCounter;
 					// msgHeaders.put(MD_SPLIT_MESSAGE_ID, nMessageCounter);
+					++mapper_unit.get(this).nMessageCounter;
+					msgHeaders.put(MD_SPLIT_MESSAGE_ID, mapper_unit.get(this).nMessageCounter);
 					msgHeaders.put(MD_SPLIT_MESSAGE_LENGTH,
 							((SmartStream) msgOutput).getByteCount());
 					IMessage msgProcessed = cntxt.getMessageFactory()
@@ -150,4 +161,11 @@ public class Splitter implements IProcessor, SplitterCallback {
 	public void dispose() {
 		// Doing nothing
 	}
+}
+
+class MapperUnit {
+	int nMessageCounter;
+	Map<String, Object> headers;
+	IProcessingContext context;
+	
 }
