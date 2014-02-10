@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema
+    xmlns="http://www.edifecs.com/schema/100"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.edifecs.com/schema/100 ../schema.xsd"
+    name="route-engine:Splitter"
+    version="1.0"
+    revision="1"    
+    category="specific">
+    <include>schema:X_Component</include>
+
+    <objects>
+     <object
+            name="route-engine_Splitter_X_Component"
+            base="X_Component"
+            templateName="%name%"
+            public="true"
+            contextId="com.edifecs.eam.ui.eclipse.help.XES_CONFIGURATOR_ROUTES_SPLITTER">
+            <macroEnum
+                ref="All" />
+            <attribute
+                name="type"
+                base="type"
+                lookup="true"
+                type="string"
+                defaultValue="splitter" />
+        </object>
+        <object
+            name="route-engine_Splitter_X_Config"
+            base="X_Config"
+            displayName="Config"
+            public="false"
+            contextId="com.edifecs.eam.ui.eclipse.help.XES_CONFIGURATOR_ROUTES_SPLITTER"
+            extraAttributes="false">
+            <macroEnum
+                ref="Empty" />
+        </object>
+        <object
+            name="route-engine_Splitter_X_Context"
+            type="X_Context"
+            templateName="Context"
+            displayName="Context"
+            public="true"
+            contextId="com.edifecs.eam.ui.eclipse.help.XES_CONFIGURATOR_ROUTES_SPLITTER"
+            extraAttributes="false">
+		<attribute
+			name="RecordSeparator"
+			category="Property"
+			mandatory="false"
+			public="true"
+			type="string"
+			defaultValue="{Prp[RecordSeparator]}"
+			displayName="Record separator">
+			<description
+				refs="desc.splitter.record.separator">%s</description>
+			<macroEnum ref="All" />
+		</attribute>
+		<attribute
+			name="SuppressEmptyMessages"
+			category="Property"
+			mandatory="false"
+			public="true"
+			type="enumeration"
+			defaultValue="false"
+			displayName="Suppress Empty Messages">
+			<description
+				refs="desc.splitter.suppress.empty.messages">%s</description>
+			<enumeration ref="bool" />
+<!-- 
+            <enumeration>
+                <constant name="Native" displayName="UI name" />
+                <constant name="MData" />
+                <constant name="NativeBatch" />
+            </enumeration>
+ -->
+		</attribute>
+        </object>
+        <object
+            name="route-engine_Splitter_X_Output_X_Params"
+            base="X_Output_X_Params">
+        </object>
+    </objects>
+    <associations />
+</schema>

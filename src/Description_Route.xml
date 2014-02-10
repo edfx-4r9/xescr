@@ -1,0 +1,453 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema
+    xmlns="http://www.edifecs.com/schema/100"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.edifecs.com/schema/100 ../schema.xsd"
+    name="DescriptionRoute"
+    version="1.0"
+    category="share"
+    revision="1"> 
+	<descriptions> 
+        <description name="desc.route.id">Route unique name</description>
+        <description name="desc.filter">You can set filters to get results necessary
+for your business needs. For example
+{MD_XE_RPN} like '*' and {MD_XE_RT} like '*Report*', where
+{MD_XE_RPN} like '*' - any result processor name and
+{MD_XE_RT} like '*Report*' - result type contains the word 'Report'</description>
+		<description name="desc.xe.src.parserschema">Parser schema to be used with the process.
+If you do not set the schema file,
+XEngine will pick up one of the default
+parser schemas</description>
+        <description name="desc.ds.out.endpoint.expiration.timeout">This property specifies the length of time before the data will expire and no longer be available for extraction from data storage. Default value is -1 (never expires)</description>
+        <description name="desc.xe.datastorage">Service to be used with the current route component</description>
+        <description name="desc.service.name.checkpoint">Service to be used with the current route component</description>
+        <description name="desc.xe.taskreport">Service to be used with the current route component</description>
+        <description name="desc.reporter.template">Path to the template file you want to use for reports</description>
+        <description name="desc.receiver.rootdir">The path to the source folder. The ... (Browse) button, used for browsing, can be used to navigate to a folder using a graphical tree structure of the file system</description>
+        <description name="desc.source.path">Path to the group. Group is a storage of source messages</description>
+<description name="desc.id">ID of messages that should be extracted.
+It can be exact id, mask, or empty value.
+Parameter will be used if "Activation mode"
+parameter is "Route start" or the received
+command does not have this parameter</description>
+<description name="desc.scan.timeout">Timeout in milliseconds before rescanning the path
+in Data storage. Parameter will be used only if
+"Activation mode" parameter is set to "Route start"</description>
+<description name="desc.results.batch.mode.none">Current behavior, each results reported separately</description>
+<description name="desc.results.batch.mode.folder">Items in scope of one folder batched together and sent out as multimessage exchanges with several messages</description>
+<description name="desc.results.batch.mode.all">Batch all extracted results</description>
+<description name="desc.receiver.include.fileMasks">Condition for the files to be included. You can use
+the following file masks to set condition: 
+** - any folder with all its subfolders;
+* - any file;
+? - any character; use commas to separate masks.
+For example: folder1/**/data? according to this
+mask, all messages in folder1 on any level starting
+from 'data' followed by any other character will be
+picked up (data1, data2... etc)</description>
+<description name="desc.receiver.exclude.fileMasks">Condition for the files to be excluded. You can use
+the following file masks to set condition: 
+** - any folder with all its subfolders;
+* - any file;
+? - any character; use commas to separate masks.
+For example: folder1/**/data? according to this
+mask, all messages in folder1 on any level starting
+from 'data' followed by any other character will be
+excluded (data1, data2... etc)</description>
+<description name="desc.receiver.include.files.lessThan">Files less than the size provided will be passed to the
+process. You can set the file size using the following format:
+10G - for gigabytes (any number can be used instead of 10)
+10M - for megabytes (any number can be used instead of 10) 
+10K - for kilobytes (any number can be used instead of 10) 
+10 - for bytes (any number can be used instead of 10)</description> 
+<description name="desc.receiver.include.files.greaterThan">Files greater than the size provided will be passed to the
+process. You can set the file size using the following format:
+10G - for gigabytes (any number can be used instead of 10)
+10M - for megabytes (any number can be used instead of 10) 
+10K - for kilobytes (any number can be used instead of 10) 
+10 - for bytes (any number can be used instead of 10)</description>
+<description name="desc.receiver.pollingDelay">Interval in milliseconds to be used when polling the source folder</description>
+<description name="desc.receiver.prefetchSize">Size of data buffer. You can set the number of 
+files to be taken to buffer from the source folder</description>
+<description name="desc.receiver.delete.emptyfolders">Choose whether to remove empty subfolders and provide the level below which all empty subfolders will be removed</description>
+<description name="desc.destination.path">Path for resulted data</description>
+<description name="desc.sender.rootdir">Path to the folder to put processed data to</description>
+<description name="desc.sender.filenameTemplate">Template to name the outgoing files. You can
+use macros to set the template name. 
+For example: {GUID}.{MD_Ext}, where
+GUID - generates new GUID;
+MD_Ext -  file extension based on the result type</description>
+<description name="desc.sender.mode.data">Choose what you want to do if data
+file with the same name already exists in
+the provided destination folder</description>
+<description name="desc.sender.mode.properties">Choose what you want to do if properties
+file with the same name already exists in
+the provided destination folder</description>
+<description name="desc.xe.src.guideline">Path to the guideline you want to use.
+If you do not set the guideline here,
+XEngine will pick up the guideline
+according to the selector configuration</description>
+<description name="desc.xe.encoding">Data file encoding</description>
+<description name="desc.xe.bdf">Specifies smallest file size that requires BDF support.
+You can set the file size using the following format:
+10M - for megabytes (any number can be used instead of 10)
+10K - for kilobytes (any number can be used instead of 10)
+10 - for bytes (any number can be used instead of 10)</description>
+<description name="desc.xe.selector.service.name">The name of the XEServer service that will 
+be used to pick up your custom selector</description>
+<!--description name="desc.xe.src.selector.uri">Selector name used in the process</description-->
+<description name="desc.lock.type">Select one of the following types of the lock you want to use:
+
+none: If the file is being used by another process,
+the current process will perform no action on this file. If the file is not used, it will be locked for the current process.
+
+rename: If the file is not used by another process, it is renamed
+and the current process is started.
+
+check for stable size: Checks if the file is being used by another
+process by looking at its size and modification date.
+
+OS lock: Checks if the file is used by another process, sets lock
+if it is possible, and then removes the lock.
+</description>
+<description name="desc.lock.timeout">Available for Rename lock type only. Period of time for which lock process will try to rename the message</description>
+<description name="desc.xe.src.map">A map file (.ems) to be used for data translation</description>
+<description name="desc.xe.translator.output.format">Format of the file to be processed</description>
+<description name="desc.compression.level">Level of data compression. Maximum compression level is 9</description>
+<description name="desc.velocity.template">Provide a template that will be used for transformation. The template can be represented as any file type but should correspond to the appropriate syntax</description>
+<description name="desc.velocity.template.loader.cache">Template caching</description>
+<description name="desc.filenameTemplate">Template used for file name generation. Default template is
+{E_ID}_{M_SID}.{M_Ext} - where {E_ID}- exchange id
+{M_SID} - message index in scope of exchange (1,2,...)
+.{M_Ext} - message extension</description>
+<description name="desc.xe.main.name">Name of the data file to be handled as
+main data in case of multisource exchange</description>
+<description name="desc.max.aggregators.number">Maximum number of aggregation processes within this aggregation available
+at the same time. Maximum allowed number is 1000</description>
+<description name="desc.aggregation.expiration.time">Time limit in milliseconds used for all aggregations to come.
+In case the last aggregation is not received in
+the provided time limit, an error will be reported</description>
+<description name="desc.aggregator.serialization.threshold">10M - for megabytes (any number can be used instead of 10)
+10K - for kilobytes (any number can be used instead of 10)
+10 - for bytes (any number can be used instead of 10)
+</description>
+<description name="desc.expression">Sets condition for the messages to be correlated. You can
+use macros to set condition. For example: {Prp[CorrelationID]}
+according to this condition, all messages will be checked for
+the CorrelationID property and messages with the same ID will
+be correlated</description>
+<description name="desc.marker.property">Allows to specify property name. If  property is present on
+incoming message, then it will be treated as last message</description>
+<description name="desc.max.message.number">Allows to specify number of messages that should be aggregated</description>
+<description name="desc.script.filename">Provide a path to the file with groovy script</description>
+<description name="desc.separator.string">Provide a string to serve as a separator</description>
+<description name="desc.separator.hex">Provide a hex value to serve as a separator</description>
+<description name="desc.completion.xes.expression">If your custom expression is true, the task will
+be marked as complete. You can use macros
+to set conditions. For example: {Prp[LastMessage]}='true'
+according to this condition, task will be completed if the
+message contains property 'LastMessage' and it is set to 'true'</description>
+<description name="desc.correlation.macro.expression">Sets condition for the messages to be correlated.
+You can use macros to set condition.
+For example: {Prp[CorrelationID]}
+according to this condition, all messages will be checked for
+the CorrelationID property and messages with the same ID will
+be correlated</description>
+<description name="desc.component.name">Choose the component on the Route that will serve as a completion marker for the aggregation. When the task on the specified component is completed, the aggregation will be also completed</description>
+<description name="desc.script.string">Provide a groovy script in the value box.</description>
+
+<description name="desc.template.id">This parameter will be used only for incoming JMS Text Messages</description>
+<description name="desc.sender.message.type">The message type describes the content of messages</description>
+<description name="desc.sender.message.encoding">Encoding</description>
+<description name="desc.receiver.message.encoding">Provide the encoding of the message that the IBM WebSphere MQ component receives. Options can include: UTF-16, UTF-8, ASCII</description>
+<description name="desc.receiver.destination">Name of Queue or Topic</description>
+<description name="desc.destination.type">Destination type Queue or Topic</description>
+<description name="desc.sender.destination">Select the type of destination to use</description>
+<description name="desc.receiver.timeout">Available only if "Activation mode" parameter is "By command".
+Time to wait for a single message. If XEServer does
+not receive any new messages during this timeout then
+command task ends. Time count is started only when no
+messages are present in the queue.</description>
+<description name="desc.receiver.selector">JMS Selector allows to limit delivered messages to
+those with the specified JMS property value</description>
+<description name="desc.xml.filename">Specifies full file path to XML template</description>
+<description name="desc.xml.encoding">Provide encoding of the result transformation</description>
+<description name="desc.xml.transformer">Choose what transformation engine you want to use.
+The following engines are available: xalan, saxon</description>
+<description name="desc.xslt.transformer.xalan">XSLT:Xalan is an XSLT processor implementation (the engine for transforming XML documents into HTML, text, or other XML document types)
+</description>
+<description name="desc.xslt.transformer.saxon">XSLT:Saxon is an XSLT processor implementation (the engine for transforming XML documents into HTML, text, or other XML document types)</description>
+<description name="desc.stx.transformer.joost">STX:Joost is an STX processor implementation (the engine for transforming XML documents into HTML, text, or other XML document types)</description>
+<description name="desc.sender.message.correlation.id">ID that will be added to all outgoing messages</description>
+<description name="desc.sender.message.priority">Priority of the messages to be processed first</description>
+<description name="desc.sender.message.timetolive">Timeout in milliseconds for the messages to be
+kept in the queue</description>
+<description name="desc.sender.message.reply.to">A queue name to sent the response to</description>
+<description name="desc.server.java.naming.provider.url">URL for connection to the server</description>
+<description name="desc.server.java.naming.factory.initial">Location of the context factory. If you are configuring a custom JMS server, you will have to provide context factory on the JNDI properties tab</description>
+<description name="desc.server.connection.factory.jndi.name">JNDI name of queue connection factory.
+The name should be registered in JNDI</description>
+<description name="desc.server.username">The name of the user</description>
+<description name="desc.password">Provide the password if you enable SSL and control
+access based on the SSLPEER channel attribute</description>
+<description name="desc.xe.splitter.rule.path">Path to the file with Data splitting rules. For 
+example ${XERoot}/config/ldns/DataSplitRules.xml</description>
+<description name="desc.instructions">List of Scrubber instructions based on the Groovy script language.
+Default value is {Prp[Scrubber.Instructions]}. Scrubber instructions
+will be picked up from incoming message properties. If property is
+empty or it does not exist, then data will not be changed by transformer
+but a warning will be reported.                            
+</description>
+<description name="desc.route.macros">Custom output property. Supported macros:
+Prp[Name] - Extracts property value by name. It will search property in the following order: Local Context Properties, Message Headers, Exchange properties, Task context
+PrpExists[Name] - Returns 'true' if property with specified name exists. It also checks all properties that are specified for {Prp}
+GUID - Generates new GUID
+CDT[format] - Current date time. Default format is yyyyMMdd-HHmmss (e.g. 20100503-104309).  
+R_Name - Returns current Route Name
+C_Name - Returns component name.
+C_Type - Returns component type. For example: FileSystem
+C_Category - Returns component "EP", "DP", "EIP","XE"
+T_ID - Returns task id (GUID)
+T_PTID - Returns parent task ID
+T_Start[format] - Returns time when task was started. Default format is yyyyMMdd-HHmmss (e.g. 20100503-104309)
+T_Duration[unit] - Returns time in ms from task start to current time
+T_CName - Returns name of component that originated the task
+T_Prp[Name] - Returns property with specified name from task context
+T_E_Created[] - Returns number of generated exchanges in scope of current task. (for Aggregator in scope of task originator)
+T_E_Processed - Returns number of exchanges processed in scope of current task
+T_Cnt[Name] - Task wide counters, allow to use named counter. Return next value for counter and increase LastUsed value. Default Counters "ComponentName-Output"
+T_LastCnt[Name] - Provides access to counter but does not increase value 
+E_ID - Exchange ID, Format TaskID-SID. For example: 722AE56D-5DC0-4321-8AA3-7D3935F0A97B-000001
+E_SID - Exchange sequential id in scope of task 000001, 000002, ...
+E_PID - ID of parent exchange
+E_MsgCnt - Returns count of messages in exchanges
+E_Size - Returns sum of messages' size that are included into this exchange
+E_Error - Returns error description
+E_Prp[Name] - Returns value of property that is present on exchange. If property with specified name does not exist, then macros will not be resolved
+E_CName - Returns name of component that generated current exchange
+E_Out - Returns output name through which this exchange was reported. Can be used with Outbound Endpoints
+M_SID - Message sequential id, Id in scope of multimessage exchange, 00001, 00002
+M_Ext - Calculated format of message: xml, html, zip or dat for all other cases
+M_Size - Size of message
+</description>
+<description name="desc.mail.to">An email address of the recipient</description>
+<description name="desc.mail.cc">Email addresses for other people to get copy of this email</description>
+<description name="desc.mail.bcc">Provides the e-mail addresses of people who will receive a blind carbon copy of this e-mail.</description>
+<description name="desc.mail.from">E-mail address used to send the notification. This address appears in the From field when a user opens the notification in their e-mail application. 2nd: Provide your e-mail address.</description>
+<description name="desc.mail.replyTo">Other people email addresses to include when replying</description>
+<description name="desc.mail.subject">Text displayed in the subject line of the notification. You can set macro in this field. 
+For example having {M_SID} macro will put message sequential id into
+the subject field</description>
+<description name="desc.mail.body">Message text or macros to be resolved as message text. 
+For example {M_Body} macro will put message contents to the
+email message body. {E_Body} macro will put contents of all 
+the messages in exchange to the email message body </description>
+<description name="desc.mail.attachment.nameTemplate">Macro to be used as an attachment name template. 
+For example: {GUID}.{M_Ext}, where {GUID} - is a new GUID and
+{M_Ext} is a message extension</description>
+<description name="desc.mail.host">Server address that you want to be used</description>
+<description name="desc.mail.port">Port number to be used by the email outbound component</description>
+<description name="desc.mail.username">Name of the user</description>
+<description name="desc.mail.password">Password for server connection</description>
+<description name="desc.external.document.handler.service.name">Custom service used to provide external document handler functionality</description>
+<description name="desc.server.jms.jndi.external.jndi.properties.file">External JNDI properties file</description>
+<description name="desc.server.jms.jndi.common">Components of this type provide the ability to establish a connection with a JMS server. The JNDI configuration for any JMS server can be configured here</description>
+<description name="desc.server.jms.activemq">Components of this type provide the ability to establish a connection with a JMS server. The supported JMS provider is Apache (HornetQ 3.6.x)</description>
+<description name="desc.server.jms.hornetq">Components of this type provide the ability to establish a connection with a JMS server. The supported JMS provider is JBoss (ActiveMQ 5.x)</description>
+<description name="desc.server.jms.weblogic">Components of this type provide the ability to establish a connection with a JMS server. The supported JMS provider is Oracle (BEA WebLogic 10.0-10.3)</description>
+<description name="desc.server.jms.openmq">Components of this type provide the ability to establish a connection with a JMS server. The supported JMS provider is Oracle (OpenMQ 4.3-4.4)</description>
+<description name="desc.server.jms.tibco">Components of this type provide the ability to establish a connection with a JMS server. The supported JMS provider is TIBCO (EMS 4.x)</description>
+<description name="desc.server.jms.seebeyond">Components of this type provide the ability to establish a connection with a JMS server. The supported JMS provider is SeeBeyond (ICAN 5.x)</description>
+<description name="desc.server.jms.ibmmqwmq">Components of this type provide the ability to establish a connection with a JMS server. This component uses the InitialContextFactory supplied by IBM. The supported JMS provider is IBM (WebSphere 6.x, 7.x)</description>
+<description name="desc.server.jms.ibmmq">Components of this type provide the ability to establish a connection with a JMS server. This component uses the InitialContextFactory implemented by Edifecs. The supported JMS provider is IBM (WebSphere 6.x, 7.x)</description>
+<description name="desc.server.ibmmq.ibmmq">Components of this type provide an ability to pick up messages from IBM Websphere MQ by using native MQ interfaces</description>
+<description name="desc.instances.number">Number of route instances. One route can have several instances that can run simultaneously</description>
+<description name="desc.receiver.ibm.openoptions">Supported IBM WebSphere MQ server options. Single value or multiple values separated by a pipe (|)</description>
+<description name="desc.receiver.ibm.getoptions">Input message options separated by a pipe (|)</description>
+<description name="desc.receiver.selector.groupid">The identifier that provides logical ordering of messages and enables the grouping of related messages</description>
+<description name="desc.receiver.selector.correlationid">ID that will be added to all outgoing messages</description>
+<description name="desc.receiver.selector.messageid">ID of the message. ID of messages that should be extracted. It can be the exact ID, mask, or empty value. Parameter will be used if Activation mode parameter is Route start or the received command does not have this parameter</description>
+<description name="desc.receiver.batch.size">Specifies the number of messages in the batch. If value is all messages, there is no limit on the number of messages. For JMS, this parameter works with Timeout to determine when receiving is complete. Batch will be considered to be complete if either this number is received or the timeout is exceeded. The default value is all messages</description>
+<description name="desc.ibm.queuemanager">Queue Manager name, defined by the MQ server</description>
+<description name="desc.ibm.port">The port number where the transfer will occur. Default value - 1414</description>
+<description name="desc.ibm.host">Host name or IP address. Default value = localhost</description>
+<description name="desc.ibm.channel">Channel name, defined by the MQ server. Default value = SYSTEM.AUTO.SVRCONN</description>
+<description name="desc.ibm.queuemanager">Queue Manager name, defined by the MQ server</description>
+<description name="desc.sender.ibm.openoptions">Supported IBM WebSphere MQ server options. Single value or multiple values separated by a pipe (|)</description>
+<description name="desc.sender.ibm.putoptions">Output message options separated by a pipe (|)</description>
+<description name="desc.sender.message.id">ID of the message</description>
+<description name="desc.sender.message.reply.to.queue.manager">The name of the queue manager to which reply or report messages should be sent</description>
+<description name="desc.PutApplName">The name of the application that delivers the message</description>
+<description name="desc.PutApplType">The type of application that puts the message. The value can be defined by the  system or by the user</description>
+<description name="desc.ApplIdentityData">This is part of the identity context of the message -  information defined by the application suite. It can be used to provide  additional information about the message or its origin. The default value is "" (empty string)</description>
+<description name="desc.ApplOriginData">Data about the originating application. This can be used by the application to  provide additional information about the origin of the message</description>
+<description name="desc.Format"> A name which indicates the nature of the data in the message. It is set by the  sender. You can use your own format names. Names beginning with  "MQ" are defined by the queue manager</description>
+<description name="desc.Report">Enables the application to send the original message to specify which report  messages are required, whether the application message data is to be included in  them, and also how the message and correlation ID in the report are to  be set. It comprises one or more constants from the MQC class combined by means  of the '+' or '|' operators</description>
+<description name="desc.UserIdentifier">ID of the user that specifies which user originated the message</description>
+<description name="desc.retry.attempts">Number of the retry attempts</description>
+<description name="desc.connection.protocol">The protocol.</description>
+<description name="desc.retry.delay">Retry delay (in milliseconds).</description>
+<description name="desc.server.connection.limit">Connection limit.</description>
+<description name="desc.connection.user">User name.</description>
+<description name="desc.connection.host">Host name or IP address.</description>
+<description name="desc.connection.port">The port.</description>
+<description name="desc.connection.password">The password.</description>
+<description name="desc.connection.transferMode">Transfer mode.</description>
+<description name="desc.first.retry.timeout">Timeout in milliseconds before the first timeout attempt</description>
+<description name="desc.last.retry.timeout">Timeout in milliseconds to be reached for the last retry attempt. Every following attempt timeout will be longer than preceding</description>
+<description name="desc.check.route.status.interval">Timeout in seconds for the route to be started after an error occurred</description>
+<description name="desc.number.errors.inbound.endpoints">Number of errors on the inbound endpoints component after which the route should be stopped</description>
+<description name="desc.number.failed.exchanges.bigger.than">Number of failed exchanges after which the route should be stopped</description>
+<description name="desc.number.failed.tasks.bigger.than">Number of failed tasks after which the route should be stopped</description>
+<description name="desc.active.task.max">Number of active tasks allowed to run for one route instance at the same time</description>
+<description name="desc.service.name">Select the service to use. If none exists, click Create new</description>
+<description name="desc.type.synchronous">All the messages are sent one after another. Only when the first message processing is complete on the component it was sent to, the second message is sent to this component.</description>
+<description name="desc.type.asynchronous">All the massages are sent one by one. As soon as the processing starts on the first message, the second message is picked up and sent to the queue. You can set maximum number of messages to be sent to one component. When the number of allowed threads is reached, processor will wait for at least one message to be processed and then will pick up the next message.</description>
+<description name="desc.transaction.name">This name is only applied when the messages are sent as Shared transaction. Outbound connector will identify the transaction by its name to send the results out</description>
+<description name="desc.tm.result.name">A name of the result file</description>
+<description name="desc.tm.filter">A filter for the results to include in the package</description>
+<description name="desc.tm.file.name.template">A template for the package name. Macros can be used to provide a template name</description>
+<description name="desc.tm.result.ui.name.template">A template for the file to be displayed in the TM </description>
+<description name="desc.TM_Transmission_TrackingID">Transmission Tracking ID. An Identifier that uniquely identifies the Transmission in the Repository. No two transmissions can share the same Tracking ID.</description>
+<description name="desc.TM_Transmission_Mode">Transmission mode. Indicates whether it is a Batch or Real-Time processing of the transmission.</description>
+<description name="desc.TM_Transmission_SubmissionType">Transmission submission type. Indicates how the transmission was submitted, such as EDI, paper, web etc.</description>
+<description name="desc.TM_Transmission_ReceiptDateTime">Transmission Receipt Date Time. Indicates when the transmission was received for processing. Accepted Date Time format yyyyMMdd-HHmmss.</description>
+<description name="desc.TM_Transmission_DataIndexerEnabled">Flag controlling the index file creation which enables the Data View.</description>
+<description name="desc.TM_Transmission_Source">Indicates the 'source' of the transmission. Out of the box values: External and Internal.</description>
+<description name="desc.TM_Transmission_Environment">Indicates the 'environment' of the transmission. Out of the box values: Production and Test.</description>
+<description name="desc.TM_Transmission_Filename">Transmission file name. Use value {MD_File_Name} when Transmission is received through FS Inbound.</description>
+<description name="desc.TM_Transmission_Direction">Transmission direction. Indicates whether this is an Inbound or Outbound processing of the transmission.</description>
+<description name="desc.tm.use.as.attachment">The results will be available in attachment section of TM in case 'Yes' is selected</description>
+<description name="desc.environment.property">Environment property</description>
+<description name="desc.schedule.name">Provide a name for the schedule. Macros can be used to provide schedule names. For example Schedule_{R_Name}, where {R_Name} is resolved as a route name. A schedule with such name will have the word "Schedule" as a prefix</description>
+<description name="desc.schedule.simple.delay">Time in milliseconds after which the job will be started.</description>
+<description name="desc.schedule.simple.repeat.count">Specifies the number of times the schedule should be repeated. Use '-1' to indicate the repeat count is infinity.</description>
+<description name="desc.schedule.simple.repeat.interval">Specifies the time interval (in milliseconds)after which the schedule to be repeated</description>
+<description name="desc.schedule.cron.delay">Time in milliseconds after which the job  will be started.</description>
+<description name="desc.schedule.cron.expression">Click Cron to specify a cron expression. The eclipse control (...) displays the Time Expression Editor, which helps you to construct an expression</description>
+<description name="desc.schedule.cron.timezone">Provide the time zone you are working in</description>
+<description name="desc.message.body">Text of the message to be added as a message body to the trigger</description>
+<description name="desc.thread">Set the number of threads for the asynchronous connection. The maximum number of threads is 50.</description>
+<description name="desc.subroute.name">The name of a route that the Subroute calls. The subroute must be designated as such using Parent endpoints in order for it to appear in the list of subroutes.</description>
+<description name="desc.service.timeout">The timeout threshold for the subroute service in milliseconds</description>
+<description name="desc.ui.displayname">The name labels the component when it is displayed in the Route Editor and in the Outline pane.</description>
+<description name="desc.extraction.priority">Select either message Header or Message data as the priority for property extraction. When the header has priority and the header contains a property to be extracted, the message data is not searched for the property found in the header.</description>
+<description name="desc.message.properties.prefix">Optionally, specify a prefix that is applied to extracted properties in the results output.</description>
+<description name="desc.list.separator">Specify a delimiter for the extracted properties in the results output. A comma is the default separator.</description>
+<description name="desc.cfg.template.id">Optionally, specify a scenario, such as Claim, which provides namespace, XPath, and complex property settings for common format documents.</description>
+<description name="desc.xpath.item.name">A unique property name is required.</description>
+<description name="desc.xpath.item.value">An XPath expression that locates values in a document.</description>
+<description name="desc.xpath.item.multiplematch.resolution">The options for multiple matching are:
+  first-returns only the first property value found
+  last-returns only the last property value found
+  all-returns all values that match the XPath
+  list-concatenates all matched values into one string, using the separator character between values</description>
+<description name="desc.complex.property.name">A unique property name is required.</description>
+<description name="desc.complex.property.value">Can include macros, and all extracted XPath properties are available to resolve context. Use the Move up control to set the resolving order.</description>
+<description name="desc."></description>
+<description name="desc.ws.port.url">Select the URL of the external Web service operation to perform. To get a list of the available macros, press CTRL+[spacebar].</description>
+<description name="desc.ws.wsdl.url">The full URL of the WSDL description of the external Web service.</description>
+<description name="desc.ws.binding">Select the binding interface to use from the drop down menu. This setting requires that the WSDL URL be specified first.</description>
+<description name="desc.ws.operation">Select the method of the external Web service that the Web Service Call uses.</description>
+<description name="desc.ws.timeout.connection">The length of time (in milliseconds) that the connection to an external Web service remains open while the route waits for a response.</description>
+<description name="desc.ws.timeout.read">The length of time (in milliseconds) that  a read operation requested from the Web Service Call  will wait for a successful response from an external Web service.</description>
+<description name="desc.ws.body.xpath">SOAP message body of requests and responses to the external Web service.</description>
+<description name="desc.ws.message.xpath">Expression that locates the results within the response message.</description>
+<description name="desc.ws.message.resolution">Specifies whether to accept the first result value in the response message, the last result value, or all result values. Multiple values are returned in a delimited list.</description>
+<description name="desc.ws.separator.type.string">Specifies the string to use to delimit multiple results.</description>
+<description name="desc.ws.separator.type.bytes">Specifies the byte value to use to delimit multiple results.</description>
+<description name="desc.ws.serialization.mode">Specify the format of the Web service response that the Web Service Call returns to the data output stream of the component. Available modes are XML or text.</description>
+<description name="desc.ws.header.name">Specify the name of the header field to be added to the response message.</description>
+
+
+<description name="desc.rollback.limit">Provide the number of rollbacks after which the data will go to the error output</description>
+<description name="desc.aggregation.expiration.time.action">Choose what action to perform when the time limit expires</description>
+
+<description name="desc.ftp.lock.none">If the file is being used by another process,
+the current process will perform no action on this file. If the file is not used, it will be locked for the current process.
+</description>
+<description name="desc.ftp.lock.rename">If the file is not used by another process, it is renamed
+and the current process is started.
+</description>
+<description name="desc.errorchannel.destination">Default error channel destination for save the exception information in case of error, copy data for recovery and/or debugging.</description>
+<description name="desc.errorchannel.template">Default error channel template</description>
+<description name="desc.http.edpoint.in.target">Relative url for addressing endpoint. In case a sample target is set to 'test', the endpoint can be accessed at 'http://&lt;hostname&gt;:&lt;port&gt;/endpoint/test'. Target support only alphanumeric not empty string</description>
+<description name="desc.http.edpoint.out.send.timeout">A threshold indicating the number of milliseconds that transpire without a response from the server. When the timeout value is reached with no response from the server, the incoming message is reported. This response is 504 (Route didn't finish, result not provided, request timeout is reached). The next server response that is received by the HTTP outbound endpoint in the scope of the current task is redirected to error output</description>
+<description name="desc.default.command">Provide the command to perform for this component</description>
+<description name="desc.pluggable.template.id">Choose one of the provided templates to be used as a pluggable strategy</description>
+<description name="desc.executor.workingdirectory">Directory the command will be executed in.Working directory defines the base environment path, which will be used by the executing command after it is started. This directory is not used to search for the command or executable specified in the Command line field.</description>
+<description name="desc.route-engine_dff_strategy_out">A delimited flat file that depicts a single database table. Has the following default parameters: encoding (UTF-8), escape (\), quote ("), and separator (,).</description>
+<description name="desc.route-engine_empty_strategy_out">Has no default parameters.</description>
+<description name="desc.route-engine_generic_strategy_out">Every row that is retreived from a database is treated as a separate message. Has the following default parameters: body.column. The value of body.column is the name of a table column whose value is attached to each message as a property.</description>
+<description name="desc.route-engine_xml_strategy_out">Has the following default parameter: encoding (UTF-8).</description>
+<description name="desc.route-engine_dff_strategy_in">DFF-SingleTable. A delimited flat file that depicts a single database table. Has the following default parameters: encoding (UTF-8), escape (\), quote ("), and separator (,).</description>
+<description name="desc.route-engine_generic_strategy_in">Has no default parameters.</description>
+<description name="desc.route-engine_xml_strategy_in">Has no default parameters.</description>
+<description name="desc.transaction.isolation">Specify the level of isolation when the DB Reader or DB Writer component stands alone and is not part of DB transaction:
+TRANSACTION_READ_COMMITTED
+TRANSACTION_READ_UNCOMMITTED
+TRANSACTION_REPEATABLE_READ
+TRANSACTION_SERIALIZE</description>
+<description name="desc.transaction.id">Select this option when the component is part of a DB transaction, which contains multiple read or write DB components between the start and close transaction components. In the box next to the Shared setting, provide the transaction ID property value that is specified in the DB Transaction Open component and shared among the DB transaction's components. For example, this property could be expressed as {Prp[DBConnectorTransactionID]}.</description>
+<description name="desc.transaction.id.DBTransactionClose">Provide the transaction ID property value that is specified in the DB Transaction Open component and shared among the DB transaction's components. For example, this property could be expressed as {Prp[DBConnectorTransactionID]}.</description>
+<description name="desc.transaction.id.template">Macros used to specify the database connector identifier of the transaction. This ID is unique and is a property that is attached to the output of the DB Transaction Open component.</description>
+<description name="desc.transaction.expiration.ms">The length of time (in milliseconds) that transpires after which the DB transaction is considered expired and any database updates are rolled back.</description>
+<description name="desc.transaction.isolation.DBTransactionStart">Specify the level of isolation for the transaction. The level is used for each DB Writer and Reader component in the transaction:
+TRANSACTION_READ_COMMITTED
+TRANSACTION_READ_UNCOMMITTED
+TRANSACTION_REPEATABLE_READ
+TRANSACTION_SERIALIZE</description>
+<description name="desc.ws.value">Specify the value of the header field to be added to the response message. Click Edit to specify an XPath to a result value in the message body. To get a list of the available macros, press CTRL+[spacebar].</description>
+<description name="desc.IgnoredSeverity">Comma separated list of error severity to be ignored : errors with the specified severity reported during rules execution will not be added to the model. Valid Error Severities are : Normal, Warning, Information.</description>
+<description name="desc.IgnoredSeverity.Information">Reporting errors with Information severity from the rules will also mark the result Model CurrentValidationStatus as Accepted.</description>
+<description name="desc.IgnoredSeverity.Warning">Reporting errors with Warning severity from the rules will also mark the result Model CurrentValidationStatus as AcceptedWithErrors.</description>
+<description name="desc.IgnoredSeverity.Normal">Reporting errors with Normal severity from the rules will also mark the result Model CurrentValidationStatus as Rejected.</description>
+<description name="desc.ws.properties.separator">When the Match Resolution is All, specify a character or string to delimit the list of results in the response header.</description>
+<description name="desc.ws.parent.xpath">An XPath expression specifying the parent element of complex property name/value pairs to be returned in a response message header.</description>
+<description name="desc.type.sqlstatement">Type of the SQL statement</description>
+<description name="desc.batch.size">Amount of records in one batch</description>
+<description name="desc.type.outparam">Specify whether the output of the statement is a single row or a set of rows. When SQL statement output parameter is of the type ResultSet, the value will be placed into statement context with name RESULTSET.</description>
+<description name="desc.XEC_ID">Unique XEConnect identifier.</description>
+<description name="desc.PayloadID">Payload ID of the message.</description>
+<description name="desc.XEC_BatchPassThroughMode">Property that specifies if the pass through mode is enabled or disabled.</description>
+<description name="desc.XEC_ResponseExternalUrl">The link (URL) to the external file with back end results. This file should be available to the client by means of the corresponding protocol. The link will be returned to the client as an entry in the file list.</description>
+<description name="desc.XEC_PayloadType">Payload type of the message.</description>
+<description name="desc.XEC_ErrorMessage">Provide a message that should be used in case of errors.</description>
+<description name="desc.path.to.dbconfig">Provide the location of the database to be used for tracking.</description>
+
+
+<description name="desc.bc.common.date.format">The date format. The default value is yyyyMMdd-HHmmss.SSS.</description>
+
+
+<description name="desc.bc.search.counter.id">The ID of the Balance Counter. If no ID is provided, the search is performed based on the specified parameters . If you want to get information about all the counters of the corresponding group, leave this field empty. The search will be performed based on the other parameters specified.</description>
+<description name="desc.bc.search.start.range.from.date">The starting point of the search.</description>
+<description name="desc.bc.search.start.range.to.date">The ending point of the search.</description>
+<description name="desc.bc.search.max.number.search.result">The maximum limit of the counters that get into the search results.</description>
+<description name="desc.bc.search.counter.state">The state of the counter.</description>
+<description name="desc.bc.search.counter.group">List of Balance Counter Group names separated by commas. Wild cards can be used, * - all groups.</description>
+
+
+<description name="desc.bc.in.endpoint.counter.group">List of Balance Counter Group names separated by commas.</description>
+
+
+<description name="desc.bc.out.endpoint.counter.group">The name of the counter group to be used.</description>
+<description name="desc.bc.out.endpoint.counter.id">The IDs of the counters to be used. ID can be either auto-generated if this is the first time counter is incremented. Or some meaningful value that can be used for consequent counter increments (such as Task ID) must be used. Macros are supported for this field.</description>
+<description name="desc.bc.out.endpoint.use.transactions">Use transactions</description>
+<description name="desc.bc.out.endpoint.counter.field">The name of the counter field to be incremented.
+The rule of naming: field's name can be any sequence of ASCII letters and digits but beginning with a letter also can be used the dollar sign '$', or the underscore character '_'. </description>
+<description name="desc.bc.out.endpoint.counter.field.increment">The value on which the counter is incremented.</description>
+
+<description name="desc.crosswalk.crosswalk.name">Crosswalk name</description>
+<description name="desc.crosswalk.tp.name">TP name</description>
+<description name="desc.crosswalk.lookup.criteria">Lookup criteria</description>
+<description name="desc.crosswalk.lookup.keys.prefix">Lookup keys prefix</description>
+<description name="desc.crosswalk.lookup.results.prefix">Lookup results prefix</description>
+<description name="desc.crosswalk.date">Lookup date</description>
+<description name="desc.crosswalk.multiple.results">Multiple results</description>
+<description name="desc.crosswalk.search.method">Search method</description>
+<description name="desc.crosswalk.lookup">Lookup property</description>
+<description name="desc.crosswalk.unresolved.macro.action">Unresolved macro action</description>
+<description name="desc.splitter.suppress.empty.messages">Suppress all zero-length messages.</description>
+<description name="desc.splitter.record.separator">Record separator for record based splitting. Comma and space separated hexadecimal values.</description>
+</descriptions>
+</schema>
