@@ -69,8 +69,8 @@ public class Splitter implements IProcessor, SplitterCallback {
 				if (splitByMessage) {
 					context.putResult(message);
 				} else {
-					byte[] recSepBytes = separatorHexToBytes(recSepHexString);
 					mapper_headers.put(this, msgHeaders);
+					byte[] recSepBytes = separatorHexToBytes(recSepHexString);
 					msgHeaders.put(RECORD_SEPARATOR, recSepHexString);
 					// nMessageCounter = 0;
 
