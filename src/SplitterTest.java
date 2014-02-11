@@ -23,6 +23,7 @@ public class SplitterTest implements ISplitterCallback {
 
 	@Override
 	public void pushMessageCallBack(OutputStream msgOutput) throws IOException {
+	    msgOutput.close();
 		byte[] b = new byte[(int) ((SmartStream) msgOutput).getByteCount()];
 		((SmartStream) msgOutput).getInputStream().read(b);
 		String msg = new String(b, "US-ASCII");

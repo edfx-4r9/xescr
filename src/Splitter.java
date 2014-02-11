@@ -2,8 +2,8 @@ package com.edifecs.etools.xeserver.component.splitter;
 
 import java.util.Map;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
-
 import java.lang.IllegalArgumentException;
 
 import com.edifecs.etools.commons.io.SmartStream;
@@ -38,19 +38,9 @@ public class Splitter implements IProcessor
         {
 
             String suppressEmptyMessagesString = context.getContextProperties().get(SUPPRESS_EMPTY_MESSAGES);
-            boolean suppressEmptyMessages = suppressEmptyMessagesString != null && Boolean.valueOf(suppressEmptyMessagesString);
+            boolean suppressEmptyMessages = Boolean.valueOf(suppressEmptyMessagesString);
             String recSepHexString = context.getContextProperties().get(RECORD_SEPARATOR);
             boolean splitByMessage = recSepHexString == null;
-
-            //            TODO - REMOVE
-            if (recSepHexString == null)
-            {
-                splitByMessage = true;
-            }
-            else
-            {
-                splitByMessage = false;
-            }
 
             IMessage message = messages[i];
             int nMessageID = i + 1;
@@ -72,9 +62,10 @@ public class Splitter implements IProcessor
                     byte[] recSepBytes = separatorHexToBytes(recSepHexString);
 
                     StreamSplitter wrk = new StreamSplitter();
-                    try (java.io.BufferedInputStream inputStream = new java.io.BufferedInputStream(message.getBodyAsStream()))
+                    try (InputStream inputStream = message.getBodyAsStream())
                     {
                         wrk.splitMessageByRecords(inputStream, recSepBytes, cb);
+                        inputStream.close();
                     }
                     catch (Exception e)
                     {
@@ -117,11 +108,11 @@ public class Splitter implements IProcessor
     private static class SplitterCallback implements ISplitterCallback
     {
 
-        IProcessingContext context;
-        IMessage           message;
-        int                nMessageCounter;
-        String             recordSeparator;
-        boolean            suppressEmptyMessages;
+        private IProcessingContext context;
+        private IMessage           message;
+        private int                nMessageCounter;
+        private String             recordSeparator;
+        private boolean            suppressEmptyMessages;
 
         public SplitterCallback(IProcessingContext cntxt,
                                 IMessage messg)
@@ -137,6 +128,11 @@ public class Splitter implements IProcessor
             // TODO Auto-generated method stub
             try
             {
+                if (msgOutput == null)
+                {
+                    throw new IllegalArgumentException("Output stream cannot be null.");
+                }
+                msgOutput.close();
                 if (!(msgOutput instanceof SmartStream))
                 {
                     throw new IllegalArgumentException("SmartStream type expected for message creation");

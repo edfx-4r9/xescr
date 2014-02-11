@@ -2,12 +2,13 @@ package com.edifecs.etools.xeserver.component.splitter;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 
 import org.apache.commons.io.IOUtils;
 
-interface SplitterCallback
+interface ISplitterCallback
 {
     public void pushMessageCallBack(OutputStream msgOutput) throws IOException;
 
@@ -17,9 +18,9 @@ interface SplitterCallback
 public class StreamSplitter
 {
 
-    public void splitMessageByRecords(BufferedInputStream inputStream,
+    public void splitMessageByRecords(InputStream inputStream,
                                       byte[] recSep,
-                                      SplitterCallback cb) throws IOException
+                                      ISplitterCallback cb) throws IOException
     {
         if (cb == null)
         {
@@ -37,7 +38,10 @@ public class StreamSplitter
 
         try
         {
-            inputStream = new BufferedInputStream(inputStream);
+            if (!(inputStream instanceof BufferedInputStream))
+            {
+                inputStream = new BufferedInputStream(inputStream);
+            }
             int markLimit = recSep.length;
             byte[] recSepBuffer = new byte[markLimit];
             recSepBuffer[0] = recSep[0];
@@ -53,7 +57,6 @@ public class StreamSplitter
                     if (bytesRead == markLimit - 1 && Arrays.equals(recSepBuffer, recSep))
                     {
                         // Record separator found
-                        msgOutput.close();
                         cb.pushMessageCallBack(msgOutput);
                         msgOutput = cb.getOutputStream();
                     }
@@ -71,15 +74,14 @@ public class StreamSplitter
 
             }
 
-            // Close final output stream 
+            // Close final output record 
             {
-                msgOutput.close();
                 cb.pushMessageCallBack(msgOutput);
             }
         }
         finally
         {
-            IOUtils.closeQuietly(inputStream);
+//            IOUtils.closeQuietly(inputStream);
         }
     }
 }
