@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import java.lang.IllegalArgumentException;
-import org.apache.commons.io.IOUtils;
 
 import com.edifecs.etools.commons.io.SmartStream;
 import com.edifecs.etools.route.api.ICompositeMessage;
@@ -53,9 +52,6 @@ public class Splitter implements IProcessor
                 splitByMessage = false;
             }
 
-
-            Map<String, Object> msgHeaders = context.getInputMessage().getMessages()[i].getHeaders();
-
             IMessage message = messages[i];
             int nMessageID = i + 1;
             Map<String, Object> md = message.getMessageDescriptor();
@@ -84,9 +80,6 @@ public class Splitter implements IProcessor
                     {
                         throw new ProcessingException(e);
                     }
-                    finally
-                    {
-                    }
                 }
             }
         }
@@ -113,17 +106,6 @@ public class Splitter implements IProcessor
             throw new ProcessingException("Incorrect record separator " + separatorHexString);
         }
         return recSep;
-    }
-
-    //    @Override
-    public void pushMessageCallBack(OutputStream msgOutput) throws IOException
-    {
-    }
-
-    //    @Override
-    public OutputStream getOutputStream()
-    {
-        return new SmartStream();
     }
 
     @Override
