@@ -6,8 +6,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 
-import org.apache.commons.io.IOUtils;
-
 interface ISplitterCallback
 {
     public void pushMessageCallBack(OutputStream msgOutput) throws IOException;
@@ -36,52 +34,45 @@ public class StreamSplitter
         }
         OutputStream msgOutput = null;
 
-        try
+        if (!(inputStream instanceof BufferedInputStream))
         {
-            if (!(inputStream instanceof BufferedInputStream))
-            {
-                inputStream = new BufferedInputStream(inputStream);
-            }
-            int markLimit = recSep.length;
-            byte[] recSepBuffer = new byte[markLimit];
-            recSepBuffer[0] = recSep[0];
+            inputStream = new BufferedInputStream(inputStream);
+        }
+        int markLimit = recSep.length;
+        byte[] recSepBuffer = new byte[markLimit];
+        recSepBuffer[0] = recSep[0];
 
-            msgOutput = cb.getOutputStream();
-            int character;
-            while ((character = inputStream.read()) != -1)
+        msgOutput = cb.getOutputStream();
+        int character;
+        while ((character = inputStream.read()) != -1)
+        {
+            inputStream.mark(markLimit - 1);
+            if (character == (byte) recSep[0])
             {
-                inputStream.mark(markLimit - 1);
-                if (character == (byte) recSep[0])
+                int bytesRead = inputStream.read(recSepBuffer, 1, markLimit - 1);
+                if (bytesRead == markLimit - 1 && Arrays.equals(recSepBuffer, recSep))
                 {
-                    int bytesRead = inputStream.read(recSepBuffer, 1, markLimit - 1);
-                    if (bytesRead == markLimit - 1 && Arrays.equals(recSepBuffer, recSep))
-                    {
-                        // Record separator found
-                        cb.pushMessageCallBack(msgOutput);
-                        msgOutput = cb.getOutputStream();
-                    }
-                    else
-                    {
-                        // Record separator not found
-                        inputStream.reset();
-                        msgOutput.write(character);
-                    }
+                    // Record separator found
+                    cb.pushMessageCallBack(msgOutput);
+                    msgOutput = cb.getOutputStream();
                 }
                 else
                 {
+                    // Record separator not found
+                    inputStream.reset();
                     msgOutput.write(character);
                 }
-
             }
-
-            // Close final output record 
+            else
             {
-                cb.pushMessageCallBack(msgOutput);
+                msgOutput.write(character);
             }
+
         }
-        finally
+
+        // Close final output record 
         {
-//            IOUtils.closeQuietly(inputStream);
+            cb.pushMessageCallBack(msgOutput);
         }
     }
 }

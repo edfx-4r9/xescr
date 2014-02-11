@@ -3,7 +3,6 @@ package com.edifecs.etools.xeserver.component.splitter;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -39,18 +38,11 @@ public class SplitterTest implements ISplitterCallback {
 	}
 
 	// @Test
-	public void testPushMessageCallBack() {
-		// fail("Not yet implemented"); // TODO
-		assertTrue(false);
-	}
-
-	// @Test
 	public void runTestProcess(String inMessage, String rSep, String[] outMes)
 			throws IOException {
 		byte[] recSep = rSep.getBytes();
 		byte[] payload = inMessage.getBytes();
 		ByteArrayInputStream is = new ByteArrayInputStream(payload);
-//		msgs = new String[] { "abc", "def", "", "ghi" };
 		msgs = outMes;
 
 		msgCount = 0;
@@ -59,7 +51,7 @@ public class SplitterTest implements ISplitterCallback {
 	}
 
 	@Test
-	public void test_data_001() throws IOException {
+	public void test001_long_record_separator_checks_mark_and_reset() throws IOException {
 		assertTrue(true);
 		String recordSeparator = "XXY";
 		String inputMessage = "abcXXYdefXXXYghi";
@@ -68,7 +60,7 @@ public class SplitterTest implements ISplitterCallback {
 	}
 
 	@Test
-	public void test_data_002() throws IOException {
+	public void test002_splitting_and_empty_record_inside_message() throws IOException {
 		assertTrue(true);
 		String recordSeparator = "XZ";
 		String inputMessage = "abcXZdefXZXZghi";
@@ -77,7 +69,7 @@ public class SplitterTest implements ISplitterCallback {
 	}
 
 	@Test
-	public void test_data_003() throws IOException {
+	public void test003_record_separator_not_found() throws IOException {
 		assertTrue(true);
 		String recordSeparator = "XYZ";
 		String inputMessage = "abcXZdefXZXZghi";
@@ -86,7 +78,7 @@ public class SplitterTest implements ISplitterCallback {
 	}
 
 	@Test
-	public void test_data_004() throws IOException {
+	public void test004_record_separator_contains_two_halves() throws IOException {
 		assertTrue(true);
 		String recordSeparator = "XZXZ";
 		String inputMessage = "abcXZdefXZXZghi";
@@ -95,7 +87,7 @@ public class SplitterTest implements ISplitterCallback {
 	}
 
 	@Test
-	public void test_data_005() throws IOException {
+	public void test005_record_separator_from_one_character() throws IOException {
 		assertTrue(true);
 		String recordSeparator = "X";
 		String inputMessage = "abcXZdefXZXZghi";
@@ -104,7 +96,7 @@ public class SplitterTest implements ISplitterCallback {
 	}
 
 	@Test
-	public void test_data_006() throws IOException {
+	public void test006_empty_record_at_message_start() throws IOException {
 		assertTrue(true);
 		String recordSeparator = "XZ";
 		String inputMessage = "XZabcXZdef";
@@ -113,7 +105,7 @@ public class SplitterTest implements ISplitterCallback {
 	}
 
 	@Test
-	public void test_data_007() throws IOException {
+	public void test007_empty_record_at_message_end() throws IOException {
 		assertTrue(true);
 		String recordSeparator = "XZ";
 		String inputMessage = "abcXZdefXZ";
@@ -122,7 +114,7 @@ public class SplitterTest implements ISplitterCallback {
 	}
 
 	@Test
-	public void test_data_008() throws IOException {
+	public void test008_message_contains_only_empty_records() throws IOException {
 		assertTrue(true);
 		String recordSeparator = "XZ";
 		String inputMessage = "XZ";
@@ -131,13 +123,22 @@ public class SplitterTest implements ISplitterCallback {
 	}
 
 	@Test
-	public void test_data_009() throws IOException {
+	public void test009_message_contains_only_empty_records() throws IOException {
 		assertTrue(true);
 		String recordSeparator = "XZ";
 		String inputMessage = "XZXZ";
 		String[] outputMessages = new String[] { "", "", "" };
 		runTestProcess(inputMessage, recordSeparator, outputMessages);
 	}
+
+    @Test
+    public void test010_message_is_empty() throws IOException {
+        assertTrue(true);
+        String recordSeparator = "XZ";
+        String inputMessage = "";
+        String[] outputMessages = new String[] { "" };
+        runTestProcess(inputMessage, recordSeparator, outputMessages);
+    }
 
 	public void test_data_010() throws IOException {
 		assertTrue(true);
