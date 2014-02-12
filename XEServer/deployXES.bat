@@ -1,3 +1,4 @@
+@REM	C:\Edifecs\8.4\XEServer\features\batcher\config\ 
 @REM	
 @echo off
 @call %~dp0printbig >>%~dp0deploy.log
@@ -38,7 +39,8 @@ for /f %%F in ('dir /b %XESRoot%\profiles') do @echo %%F >>%ECHudsonBuilds%\prof
 for /f %%F in ('dir /b %XESRoot%\profiles') do call echo y | "%EAMRoot%\Server\ConfigTool\exec\win\cfgtool.bat" -s ${XESRoot}/profiles/%%F -d %ECHudsonBuilds%\profiles\%%F.zip >>%ECHudsonBuilds%\profiles\profiles_backup.txt
 
 :Download
-if "%~1*" == "cache*" (set ProjectPage=cache) else del %ECHudsonBuilds%\XEServer*.zip 2>nul
+del %ECHudsonBuilds%\XEServer*.zip 2>nul
+set webfile=https://etbuild01.edifecs.local/view/8.4.0/job/XEngine Server 8.4.0/lastSuccessfulBuild/artifact/build-artifacts/%1
 (@call %~dp0download_build.bat %ArcFile% "%ProjectPage%" | tee -a %~dpn0.log) || exit /b 53
 if not exist %ECHudsonBuilds%\XEServer (@call %~dp0printlog %~dpn0 Build download was unsuccessfull. & exit /b 1)
 @echo on
@@ -47,12 +49,21 @@ if not exist %ECHudsonBuilds%\XEServer (@call %~dp0printlog %~dpn0 Build downloa
 
 :Copy_files
 copy %XESRoot%\license.lic %ECHudsonBuilds%\XEServer\
+copy %XESRoot%\features\batcher\config\*.properties %ECHudsonBuilds%\XEServer\features\batcher\config\ 
 
 :Deploy
+@call %~dp0printlog %~dpn0 Stopping EAM Service ...
+@REM	
+net1 stop EAMService
 @call %~dp0printlog %~dpn0 Stopping XEServer ...
-@call %XESroot%\bin\shutdown_all_profiles.bat
+@call %XESroot%\bin\shutdown_all_profiles.bat || @call %~dp0printlog Unable to complete profiles shutdown.
+
 sleep 29
+@REM	@call %~dp0printlog %~dpn0 File locks information ...
+@REM	handle %XESRoot%\ >>%~dpn0.log
+@call %~dp0lockinfo %XESRoot%\ >>%~dpn0.log
 @echo on
+attrib +h %XESRoot%\profiles
 echo.&echo.&@call %~dp0printlog %~dpn0 Trying to move XEServer to backup directory ...
 move %XESRoot% %ECHudsonBuilds%\backup\ || (@call %~dp0printlog %~dpn0 Unable to move XEServer directory to %ECHudsonBuilds%\backup\. & exit /b 1)
 @call %~dp0printlog %~dpn0 XEServer moved to %ECHudsonBuilds%\backup\XEServer
@@ -64,7 +75,8 @@ move %ECHudsonBuilds%\XEServer %XESRoot% || (@call %~dp0printlog %~dpn0 Unable t
 @call %~dp0printlog %~dpn0 Restoring profiles from image ...
 @echo on
 for /f %%F in ('dir %ECHudsonBuilds%\profiles\*.zip /b') do @call %EAMRoot%\Server\ConfigTool\exec\win\deploy_xescfg.bat %ECHudsonBuilds%\profiles\%%F
-for /f %%F in ('dir %ECHudsonBuilds%\profiles\*.zip /b') do echo Starting profile `%%~nF` && @call %XESRoot%\bin\start.bat %%~nF <nul >nul
+@REM	for /f %%F in ('dir %ECHudsonBuilds%\profiles\*.zip /b') do echo Starting profile `%%~nF` && @call %XESRoot%\bin\start.bat %%~nF <nul >nul
+for /f %%F in ('dir /b %XESRoot%\profiles') do echo Starting profile `%%~nF` && @call %XESRoot%\bin\start.bat %%~nF <nul >nul
 
 @call %~dp0printlog %~dpn0 Deploy finished.
 sleep 10

@@ -31,9 +31,13 @@ if ERRORLEVEL 1 @call %~dp0printlog %~dpn0 Some directories are missing, QUIT !!
 @call %~dp0printlog %~dpn0 Downloading configuration (alerts, agents, etc.) ...
 @call %~dp0config_download.bat %ECHudsonBuilds%\workspace\xesmanager_configuration.zip
 if ERRORLEVEL 1 @call %~dp0printlog %~dpn0 Unable to create configuration backup file %ECHudsonBuilds%\workspace\xesmanager_configuration.zip & exit /b 1
+for /F %%f in ('%~dp0date.exe +%%Y_%%m_%%d_%%H_%%M') do set BkpFile=%%f
+copy %ECHudsonBuilds%\workspace\xesmanager_configuration.zip %ECHudsonBuilds%\workspace\xsm_cfg_%BkpFile%.zip >nul
+
 
 :Download
-if "%~1*" == "cache*" (set ProjectPage=cache) else del %ECHudsonBuilds%\XESManager*.zip 2>nul
+del %ECHudsonBuilds%\XESManager*.zip 2>nul
+set webfile=https://etbuild01.edifecs.local/view/8.4.0/job/XES Manager 8.4.0/lastSuccessfulBuild/artifact/xes-manager/target/%1
 (@call %~dp0download_build.bat %ArcFile% "%ProjectPage%" | tee -a %~dpn0.log) || exit /b 1
 if not exist %ECHudsonBuilds%\XESManager (@call %~dp0printlog %~dpn0 Build download was unsuccessfull. & exit /b 1)
 if ERRORLEVEL 1 @call %~dp0printlog %~dpn0 Error during build download / unpack. & exit /b 1
@@ -46,17 +50,34 @@ call %CATALINA_HOME%\bin\shutdown.bat
 sleep 30
 mkdir %ECHudsonBuilds%\workspace\ 2>nul
 mkdir %ECHudsonBuilds%\workspace\alerts\ 2>nul
+@REM	mkdir %ECHudsonBuilds%\workspace\keys\ 2>nul
 copy %XESRoot%\..\XESManager\workspace\alerts\* %ECHudsonBuilds%\workspace\alerts\ >nul
+copy %XESRoot%\..\XESManager\workspace\keys\* %ECHudsonBuilds%\workspace\keys\ >nul
 copy %XESRoot%\..\XESManager\workspace\perms.h2.db %ECHudsonBuilds%\workspace\ >nul
+copy %XESRoot%\..\XESManager\workspace\config\smtp-server.json %ECHudsonBuilds%\workspace\config\ >nul
 
 :Extract
 
 :Copy_files
 mkdir %ECHudsonBuilds%\XESManager\workspace\alerts\
 copy %XESRoot%\..\XESManager\workspace\alerts\* %ECHudsonBuilds%\XESManager\workspace\alerts\ >nul
-copy %XESRoot%\..\XESManager\workspace\perms.h2.db %ECHudsonBuilds%\XESManager\workspace\ >nul
+@REM	Fails to start XES manager in case of DB changes
+@REM	copy %XESRoot%\..\XESManager\workspace\perms.h2.db %ECHudsonBuilds%\XESManager\workspace\ >nul
+@REM	Saving security sertificates
+mkdir %ECHudsonBuilds%\XESManager\workspace\keys 
+copy %XESRoot%\..\XESManager\workspace\keys\*.private %ECHudsonBuilds%\XESManager\workspace\keys\ >nul
+copy %XESRoot%\..\XESManager\workspace\keys\*.public %ECHudsonBuilds%\XESManager\workspace\keys\ >nul
+mkdir %ECHudsonBuilds%\XESManager\workspace\config
+copy %XESRoot%\..\XESManager\workspace\config\smtp-server.json %ECHudsonBuilds%\XESManager\workspace\config\ >nul
+mkdir %ECHudsonBuilds%\XESManager\workspace\batcher\config\ >nul
+copy %XESRoot%\features\batcher\config\db_1.properties %ECHudsonBuilds%\XESManager\workspace\batcher\config\ 
+
 
 :Deploy
+sleep 2
+@REM	handle %XESRoot%\..\XESManager\ >>%~dpn0.log
+@call %~dp0lockinfo %XESRoot%\..\XESManager\ >>%~dpn0.log
+attrib +h %XESRoot%\..\XESManager\bin
 echo.&echo.&@call %~dp0printlog %~dpn0 Trying to move XESManager to backup directory ...
 	
 @REM	echo on
