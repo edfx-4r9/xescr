@@ -26,6 +26,7 @@ if ERRORLEVEL 1 @call %~dp0printlog %~dpn0 Some directories are missing, QUIT !!
 
 :Backups
 @call %~dp0move_bkp.bat %XESRoot% | tee -a %~dpn0.log
+@call %~dp0move_bkp.bat statistics | tee -a %~dpn0.log
 
 
 :Backup_profiles
@@ -37,6 +38,8 @@ move %ECHudsonBuilds%\profiles\*.zip %ECHudsonBuilds%\backup\ 2>nul
 @call %~dp0printlog %~dpn0 Creating profiles ... >>%ECHudsonBuilds%\profiles\profiles_backup.txt
 for /f %%F in ('dir /b %XESRoot%\profiles') do @echo %%F >>%ECHudsonBuilds%\profiles\profiles_backup.txt
 for /f %%F in ('dir /b %XESRoot%\profiles') do call echo y | "%EAMRoot%\Server\ConfigTool\exec\win\cfgtool.bat" -s ${XESRoot}/profiles/%%F -d %ECHudsonBuilds%\profiles\%%F.zip >>%ECHudsonBuilds%\profiles\profiles_backup.txt
+mkdir %ECHudsonBuilds%\statistics\ > nul
+xcopy /Y /E %XESRoot%\statistics %ECHudsonBuilds%\statistics\ >nul
 
 :Download
 del %ECHudsonBuilds%\XEServer*.zip 2>nul
@@ -50,6 +53,9 @@ if not exist %ECHudsonBuilds%\XEServer (@call %~dp0printlog %~dpn0 Build downloa
 :Copy_files
 copy %XESRoot%\license.lic %ECHudsonBuilds%\XEServer\
 copy %XESRoot%\features\batcher\config\*.properties %ECHudsonBuilds%\XEServer\features\batcher\config\ 
+mkdir %ECHudsonBuilds%\XEServer\statistics\ 2>nul
+xcopy /Y /E %XESRoot%\statistics %ECHudsonBuilds%\XEServer\statistics\ >nul
+copy %XESRoot%\platform\etc\startup.ini %ECHudsonBuilds%\XEServer\platform\etc\startup.ini
 
 :Deploy
 @call %~dp0printlog %~dpn0 Stopping EAM Service ...
@@ -80,5 +86,7 @@ for /f %%F in ('dir /b %XESRoot%\profiles') do echo Starting profile `%%~nF` && 
 
 @call %~dp0printlog %~dpn0 Deploy finished.
 sleep 10
+
+@call %~dp0printbig Finished %~f0 at %time% >>%~dp0deploy.log
 exit /b
 

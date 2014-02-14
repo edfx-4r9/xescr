@@ -8,8 +8,28 @@
 @call %~dp0printlog %~dpn0 Starting deploy script %~f0
 
 
-setlocal
-@call %~dp0setenv.bat | tee -a %~dpn0.log
+REM	setlocal
+echo ---
+REM	@call 
+%~dp0setenv.bat | tee -a %~dpn0.log
+
+
+set ECRootPath=C:\edifecs\8
+set XESRoot=%ECRootPath%\XEServer
+set EAMRoot=%ECRootPath%\EAM
+if not defined ECHudsonBuilds set ECHudsonBuilds=%ECRootPath%\HBuilds
+SET XESManagerWorkspace=%XESRoot%\..\XESmanager\workspace
+SET CATALINA_HOME=%XESRoot%\..\XESmanager\tomcat
+
+
+echo ECRootPath == %ECRootPath%
+echo %XESRoot%
+echo %EAMRoot%
+echo ECHudsonBuilds == %ECHudsonBuilds%
+
+REM	echo %ECHudsonBuilds%
+REM	echo %ECRootPath%
+REM	exit /b
 if ERRORLEVEL 1 @call %~dp0printlog %~dpn0 Some environment variables are not set, QUIT !!! && exit /b 2
 if not defined ECHudsonBuilds set ECHudsonBuilds=%ECRootPath%\HBuilds
 set ArcFile=%ECHudsonBuilds%\XEServer.zip

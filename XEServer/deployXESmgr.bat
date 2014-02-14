@@ -36,7 +36,7 @@ copy %ECHudsonBuilds%\workspace\xesmanager_configuration.zip %ECHudsonBuilds%\wo
 
 
 :Download
-del %ECHudsonBuilds%\XESManager*.zip 2>nul
+if "%~1*" == "cache*" (set ProjectPage=cache) else del %ECHudsonBuilds%\XESManager*.zip 2>nul
 set webfile=https://etbuild01.edifecs.local/view/8.4.0/job/XES Manager 8.4.0/lastSuccessfulBuild/artifact/xes-manager/target/%1
 (@call %~dp0download_build.bat %ArcFile% "%ProjectPage%" | tee -a %~dpn0.log) || exit /b 1
 if not exist %ECHudsonBuilds%\XESManager (@call %~dp0printlog %~dpn0 Build download was unsuccessfull. & exit /b 1)
@@ -69,8 +69,8 @@ copy %XESRoot%\..\XESManager\workspace\keys\*.private %ECHudsonBuilds%\XESManage
 copy %XESRoot%\..\XESManager\workspace\keys\*.public %ECHudsonBuilds%\XESManager\workspace\keys\ >nul
 mkdir %ECHudsonBuilds%\XESManager\workspace\config
 copy %XESRoot%\..\XESManager\workspace\config\smtp-server.json %ECHudsonBuilds%\XESManager\workspace\config\ >nul
-mkdir %ECHudsonBuilds%\XESManager\workspace\batcher\config\ >nul
-copy %XESRoot%\features\batcher\config\db_1.properties %ECHudsonBuilds%\XESManager\workspace\batcher\config\ 
+@REM	mkdir %ECHudsonBuilds%\XESManager\workspace\batcher\config\ >nul
+@REM	copy %XESRoot%\features\batcher\config\db_1.properties %ECHudsonBuilds%\XESManager\workspace\batcher\config\ 
 
 
 :Deploy
@@ -95,9 +95,15 @@ sleep 30
 @call %~dp0printlog %~dpn0 Uploading configuration (alerts, agents, etc.) ...
 @call %~dp0config_upload.bat %ECHudsonBuilds%\workspace\xesmanager_configuration.zip
 if ERRORLEVEL 1 @call %~dp0printlog %~dpn0 Configuration upload FAILED. && sleep 10 && exit /b 2
+
+@REM	@call %~dp0config_upload.bat %~dp0XESmanager_agents.zip 
+@REM	if ERRORLEVEL 1 @call %~dp0printlog %~dpn0 Configuration upload FAILED. && sleep 10 && exit /b 2
+
 @call %~dp0printlog %~dpn0 Configuration SUCCESSFULLY uploaded.
 @call %~dp0printbig Script finished.
 
 @call %~dp0printlog %~dpn0 Deploy finished.
 sleep 10
+
+@call %~dp0printbig Finished %~f0 at %time% >>%~dp0deploy.log
 exit /b

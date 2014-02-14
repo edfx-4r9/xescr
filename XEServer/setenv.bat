@@ -9,6 +9,4 @@ if not defined ECHudsonBuilds set ECHudsonBuilds=%ECRootPath%\HBuilds
 SET XESManagerWorkspace=%XESRoot%\..\XESmanager\workspace
 SET CATALINA_HOME=%XESRoot%\..\XESmanager\tomcat
 
-set XXX=yes, defined
 path %~dp0;%ECRootPath%\bin\;%ECHudsonBuilds%\bin;%path%
-@REM	set x
