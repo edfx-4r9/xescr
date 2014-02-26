@@ -15,6 +15,7 @@ if ERRORLEVEL 1 @call %~dp0printlog %~dpn0 Some environment variables are not se
 if not defined ECHudsonBuilds set ECHudsonBuilds=%ECRootPath%\HBuilds
 set ArcFile=%ECHudsonBuilds%\XEServer.zip
 set ProjectPage=https://etbuild01.edifecs.local/view/8.4.0/job/XEngine Server 8.4.0/
+@REM	set ProjectPage=https://etbuild01.edifecs.local/view/8.4.0/job/XEngine Server 8.4.0/lastSuccessfulBuild/artifact/
 
 path %~dp0;%ECRootPath%\bin\;%ECHudsonBuilds%\bin;%path%
 SET XESManagerWorkspace=%XESRoot%\..\XESmanager\workspace
@@ -41,9 +42,9 @@ for /f %%F in ('dir /b %XESRoot%\profiles') do call echo y | "%EAMRoot%\Server\C
 mkdir %ECHudsonBuilds%\statistics\ > nul
 xcopy /Y /E %XESRoot%\statistics %ECHudsonBuilds%\statistics\ >nul
 
+
 :Download
-del %ECHudsonBuilds%\XEServer*.zip 2>nul
-set webfile=https://etbuild01.edifecs.local/view/8.4.0/job/XEngine Server 8.4.0/lastSuccessfulBuild/artifact/build-artifacts/%1
+if "%~1*" == "cache*" (set ProjectPage=cache) else del %ECHudsonBuilds%\XEServer*.zip 2>nul
 (@call %~dp0download_build.bat %ArcFile% "%ProjectPage%" | tee -a %~dpn0.log) || exit /b 53
 if not exist %ECHudsonBuilds%\XEServer (@call %~dp0printlog %~dpn0 Build download was unsuccessfull. & exit /b 1)
 @echo on
@@ -69,7 +70,6 @@ sleep 29
 @REM	handle %XESRoot%\ >>%~dpn0.log
 @call %~dp0lockinfo %XESRoot%\ >>%~dpn0.log
 @echo on
-attrib +h %XESRoot%\profiles
 echo.&echo.&@call %~dp0printlog %~dpn0 Trying to move XEServer to backup directory ...
 move %XESRoot% %ECHudsonBuilds%\backup\ || (@call %~dp0printlog %~dpn0 Unable to move XEServer directory to %ECHudsonBuilds%\backup\. & exit /b 1)
 @call %~dp0printlog %~dpn0 XEServer moved to %ECHudsonBuilds%\backup\XEServer
@@ -82,7 +82,7 @@ move %ECHudsonBuilds%\XEServer %XESRoot% || (@call %~dp0printlog %~dpn0 Unable t
 @echo on
 for /f %%F in ('dir %ECHudsonBuilds%\profiles\*.zip /b') do @call %EAMRoot%\Server\ConfigTool\exec\win\deploy_xescfg.bat %ECHudsonBuilds%\profiles\%%F
 @REM	for /f %%F in ('dir %ECHudsonBuilds%\profiles\*.zip /b') do echo Starting profile `%%~nF` && @call %XESRoot%\bin\start.bat %%~nF <nul >nul
-for /f %%F in ('dir /b %XESRoot%\profiles') do echo Starting profile `%%~nF` && @call %XESRoot%\bin\start.bat %%~nF <nul >nul
+for /f %%F in ('dir /b %XESRoot%\profiles') do echo Starting profile `%%~nF` && @call %XESRoot%\bin\start.bat %%~nF <nul >nul && echo delay 45 sec. && sleep 45
 
 @call %~dp0printlog %~dpn0 Deploy finished.
 sleep 10
